@@ -43,6 +43,12 @@ header{display:grid;gap:8px;margin-bottom:28px}
 .tag.board{color:var(--muted)}
 .tag.new{color:var(--new)}
 
+/* Schema */
+.schema{display:grid;gap:14px;margin-bottom:40px}
+.schema-head{display:grid;gap:4px}
+.schema-canvas{overflow-x:auto;background:#ffffff;border:1px solid var(--line);border-radius:6px;padding:20px}
+.schema-canvas pre.mermaid{margin:0 auto;background:transparent;font-family:var(--f-body);display:flex;justify-content:center}
+
 /* Übersichtsstreifen */
 .strip{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px;margin-bottom:40px}
 .strip ol{list-style:none;margin:0;padding:0;display:flex;align-items:center;gap:6px;min-width:1040px}
@@ -146,6 +152,116 @@ td.R{font-weight:800;color:var(--hw)} td.A{font-weight:800;color:var(--fg)} td.C
   <span><b class="tag board">Board</b> schon auf dem Whiteboard</span>
   <span><b class="tag new">neu</b> ergänzt</span>
 </div>
+
+<section class="schema" aria-label="Prozessschema">
+  <div class="schema-head"><div class="eyebrow">Schema</div><h2>Ablauf auf einen Blick</h2><p class="raci-key">Rauten = Entscheidung · grün = Geschäftsleitung · gestrichelt = Rücksprung. Details zu jedem Schritt stehen weiter unten.</p></div>
+  <div class="schema-canvas">
+<pre class="mermaid">
+flowchart TD
+  A["&lt;b&gt;0 Impuls&lt;/b&gt;&lt;br/&gt;GL · Vertrieb · PM · Hotline&lt;br/&gt;Kundenumfragen · Hersteller · Regulatorik"]:::act
+  B["&lt;b&gt;1 Produktsteckbrief&lt;/b&gt; (Confluence)&lt;br/&gt;Ziel · Erwartung · Endprodukt&lt;br/&gt;Bedarf · Produkttyp"]:::doc
+  G1{"G1&lt;br/&gt;PM-Vorprüfung"}:::gate
+  C["&lt;b&gt;2 Bewertung und Business Case&lt;/b&gt;&lt;br/&gt;Markt · EK/VK/Marge · Risiken"]:::act
+  G2{"G2&lt;br/&gt;Antrag&lt;br/&gt;Geschäftsleitung"}:::gl
+  X(["Parken / Absage&lt;br/&gt;dokumentiert"]):::stop
+
+  D{"3 Auswahl Lieferant&lt;br/&gt;notwendig?"}:::gate
+  D1["Ja: Artikel über Lieferant&lt;br/&gt;z.B. Pulsa, Multidata&lt;br/&gt;Lieferantenauswahl und&lt;br/&gt;EK-Preischeck → RC Einkauf"]:::act
+  D2["Nein: nur ein Anbieter&lt;br/&gt;z.B. Software&lt;br/&gt;Direktvertrag Hersteller"]:::act
+  V["Vertrag: Konditionen · Garantie/RMA&lt;br/&gt;SLA · EoL-Ankündigung"]:::act
+  E["Bestellung&lt;br/&gt;Testgeräte / Lizenzen"]:::gl
+  F1["Artikel wird im&lt;br/&gt;Infor angelegt"]:::act
+  F2["Artikel wird in&lt;br/&gt;KGV angelegt"]:::act
+
+  T{"4 Produkttyp?"}:::gate
+  subgraph HW["Hardware"]
+    H1["Zulassungen&lt;br/&gt;CE · PCI PTS · DK"]:::hw
+    H2["ElektroG / WEEE&lt;br/&gt;VerpackG"]:::hw
+    H3["Netzbetrieb · TMS&lt;br/&gt;ZVT / O.P.I. · Staging"]:::hw
+    H4["Lager · Ersatzteile&lt;br/&gt;RMA · Swap"]:::hw
+    H1 --> H2 --> H3 --> H4
+  end
+  subgraph SW["Software"]
+    S1["Lizenzmodell&lt;br/&gt;Cloud / lokal · SLA"]:::sw
+    S2["DSGVO · AVV"]:::sw
+    S3["KassenSichV / TSE&lt;br/&gt;GoBD · DSFinV-K"]:::sw
+    S4["Schnittstellen · Updates&lt;br/&gt;Support 1st/2nd Level"]:::sw
+    S1 --> S2 --> S3 --> S4
+  end
+  subgraph PAY["Zahlungslösung"]
+    P1["Rollenmodell&lt;br/&gt;Vertragspartner Händler"]:::pay
+    P2["ZAG/BaFin · PSD2&lt;br/&gt;KYC · PCI DSS"]:::pay
+    P3["Kartensysteme&lt;br/&gt;Zertifizierung E2E"]:::pay
+    P4["Preismodell · Onboarding&lt;br/&gt;Settlement · Chargebacks"]:::pay
+    P1 --> P2 --> P3 --> P4
+  end
+  G3{"G3&lt;br/&gt;Freigabe&lt;br/&gt;Produkttest"}:::gate
+
+  subgraph PT["5 Produkttest"]
+    T1["Produkt in&lt;br/&gt;Produkttestphase"]:::act
+    T2["Auswahl Vertriebler&lt;br/&gt;für Produkttest"]:::act
+    T3["Herstellerproduktblatt"]:::doc
+    T4["Preisliste Produkttest"]:::doc
+    T5["3–5 Testkunden&lt;br/&gt;Erfolgskriterien"]:::act
+    T1 --> T2 --> T3 --> T4 --> T5
+  end
+  G4{"G4&lt;br/&gt;Auswertung&lt;br/&gt;Test"}:::gate
+
+  subgraph PI["6 Pilotphase"]
+    L1["Produkt ist in&lt;br/&gt;Pilotphase"]:::act
+    L2["REA Pilotproduktblatt"]:::doc
+    L3["Preisliste Pilotphase"]:::doc
+    L4["Schulung Hotline&lt;br/&gt;Vertrieb · Technik"]:::act
+    L5["Pilot-KPIs messen"]:::act
+    L1 --> L2 --> L3 --> L4 --> L5
+  end
+  G5{"G5&lt;br/&gt;Freigabe&lt;br/&gt;Geschäftsleitung"}:::gl
+
+  M["&lt;b&gt;7 Markteinführung&lt;/b&gt;&lt;br/&gt;REA Produktblatt · Preisliste&lt;br/&gt;Schulung alle · Marketing"]:::act
+  R["&lt;b&gt;8 Regelbetrieb&lt;/b&gt;&lt;br/&gt;Review nach 3 und 12 Monaten"]:::act
+  EOL(["End of Life Prozess"]):::stop
+
+  A --> B --> G1
+  G1 -- Go --> C --> G2
+  G1 -- Nein --> X
+  G2 -- Abgelehnt --> X
+  G2 -. Überarbeiten .-> C
+  G2 -- Freigabe --> D
+  D -- Ja --> D1 --> V
+  D -- Nein --> D2 --> V
+  V --> E --> F1 --> F2 --> T
+  T -- Hardware --> H1
+  T -- Software --> S1
+  T -- Zahlung --> P1
+  H4 --> G3
+  S4 --> G3
+  P4 --> G3
+  G3 -- Go --> T1
+  G3 -- Stopp --> X
+  T5 --> G4
+  G4 -. Nachbessern .-> T1
+  G4 -- Stopp --> X
+  G4 -- Go --> L1
+  L5 --> G5
+  G5 -. Pilot verlängern .-> L1
+  G5 -- Go --> M --> R --> EOL
+
+  classDef act fill:#fbd3ea,stroke:#b4508a,color:#3d1029
+  classDef doc fill:#d3e3fb,stroke:#4d7cc4,color:#14294a
+  classDef gl fill:#d6f1a8,stroke:#5d8a1c,color:#22380a
+  classDef gate fill:#ffffff,stroke:#1d1d27,stroke-width:2px,color:#1d1d27
+  classDef stop fill:#eeeef3,stroke:#8a8aa0,color:#3a3a4a
+  classDef hw fill:#fde1d9,stroke:#e0573a,color:#4a1a0e
+  classDef sw fill:#dde7fb,stroke:#3b6fd8,color:#11264f
+  classDef pay fill:#d6f2e6,stroke:#1f9a6b,color:#0c3a28
+  style HW fill:#fff6f3,stroke:#e0573a
+  style SW fill:#f4f7fe,stroke:#3b6fd8
+  style PAY fill:#f2fbf7,stroke:#1f9a6b
+  style PT fill:#fdf6fa,stroke:#b4508a
+  style PI fill:#fdf6fa,stroke:#b4508a
+</pre>
+  </div>
+</section>
 
 <nav class="strip" aria-label="Übersicht">
   <ol>
