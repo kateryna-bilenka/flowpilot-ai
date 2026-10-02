@@ -1,0 +1,382 @@
+<title>Start of Life Prozess</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: whiteboard-Spine. Phasen laufen vertikal, Gates sitzen auf der Linie, Phase 4 spaltet sich in drei Bahnen (HW / SW / Zahlung). Farben = Sticky-Notes vom Board. */
+:root{
+  --bg:#f7f7f9; --dot:#d9d9e2; --surface:#ffffff; --fg:#1d1d27; --muted:#5d5d70; --line:#c9c9d6;
+  --pink:#fbd3ea; --pink-ink:#6b1f4a;
+  --green:#d6f1a8; --green-ink:#2f4d0a;
+  --blue:#d3e3fb; --blue-ink:#1d3d6b;
+  --gate:#1d1d27; --gate-fg:#ffffff;
+  --hw:#e0573a; --sw:#3b6fd8; --pay:#1f9a6b;
+  --new:#7a3cc8;
+  --f-display:"Schibsted Grotesk",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-body:"Schibsted Grotesk",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#15151c; --dot:#2a2a36; --surface:#1d1d27; --fg:#ececf3; --muted:#a3a3b8; --line:#3a3a4a;
+  --pink:#4a2338; --pink-ink:#ffd2ea; --green:#2c3d17; --green-ink:#dcf5b4; --blue:#1f2f4a; --blue-ink:#d6e5ff;
+  --gate:#ececf3; --gate-fg:#15151c; --hw:#ff8a6e; --sw:#7fa6ff; --pay:#4fd3a0; --new:#c69bff; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#15151c; --dot:#2a2a36; --surface:#1d1d27; --fg:#ececf3; --muted:#a3a3b8; --line:#3a3a4a;
+  --pink:#4a2338; --pink-ink:#ffd2ea; --green:#2c3d17; --green-ink:#dcf5b4; --blue:#1f2f4a; --blue-ink:#d6e5ff;
+  --gate:#ececf3; --gate-fg:#15151c; --hw:#ff8a6e; --sw:#7fa6ff; --pay:#4fd3a0; --new:#c69bff; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);background-image:radial-gradient(var(--dot) 1.2px,transparent 1.2px);background-size:22px 22px;color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.5}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:20px;padding-block:40px 80px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0}
+h1{font-size:clamp(28px,4.4vw,44px);font-weight:800;letter-spacing:-.02em;line-height:1.05}
+h2{font-size:22px;font-weight:700;letter-spacing:-.01em}
+h3{font-size:15px;font-weight:700}
+p{margin:0}
+.eyebrow{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.lede{max-width:68ch;color:var(--muted);margin-top:12px}
+header{display:grid;gap:8px;margin-bottom:28px}
+
+/* Legende */
+.legend{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;font-size:13px;color:var(--muted);margin-bottom:28px}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+.sw-chip{width:14px;height:14px;border-radius:2px;display:inline-block}
+.tag{font-family:var(--f-mono);font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:1px 6px;border-radius:3px;border:1px solid currentColor;white-space:nowrap}
+.tag.board{color:var(--muted)}
+.tag.new{color:var(--new)}
+
+/* Übersichtsstreifen */
+.strip{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px;margin-bottom:40px}
+.strip ol{list-style:none;margin:0;padding:0;display:flex;align-items:center;gap:6px;min-width:1040px}
+.strip li{font-size:12.5px;font-weight:600;white-space:nowrap}
+.strip .ph{padding:6px 10px;border-radius:3px;background:var(--pink);color:var(--pink-ink)}
+.strip .ph.doc{background:var(--blue);color:var(--blue-ink)}
+.strip .ph.split{background:linear-gradient(90deg,var(--hw) 0 33%,var(--sw) 33% 66%,var(--pay) 66%);color:#fff}
+.strip .g{font-family:var(--f-mono);font-size:11px;background:var(--gate);color:var(--gate-fg);padding:5px 7px;transform:rotate(0);border-radius:2px}
+.strip .g.gl{background:var(--green);color:var(--green-ink);outline:1.5px solid var(--green-ink)}
+.strip .arr{color:var(--muted);font-weight:400}
+
+/* Spine */
+.spine{position:relative;display:grid;gap:0}
+.phase{display:grid;grid-template-columns:200px 1fr;gap:24px;padding-block:22px;position:relative}
+.phase::before{content:"";position:absolute;left:186px;top:0;bottom:0;width:2px;background:var(--line)}
+.phase-head{display:grid;gap:6px;align-content:start;padding-right:16px;position:relative}
+.phase-head .num{font-family:var(--f-mono);font-size:12px;font-weight:600;color:var(--muted)}
+.phase-head .owner{font-size:12.5px;color:var(--muted)}
+.phase-head .owner b{color:var(--fg);font-weight:600}
+.phase-body{display:grid;gap:14px;min-width:0}
+.goal{font-size:14px;color:var(--muted);max-width:75ch}
+
+.notes{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.note{background:var(--pink);color:var(--pink-ink);padding:12px 13px 13px;border-radius:2px;box-shadow:0 1px 2px rgba(0,0,0,.08),0 3px 8px rgba(0,0,0,.05);display:grid;gap:6px;align-content:start;min-width:0}
+.note.doc{background:var(--blue);color:var(--blue-ink)}
+.note.gl{background:var(--green);color:var(--green-ink)}
+.note .t{font-weight:700;font-size:14px;line-height:1.3;display:flex;gap:8px;justify-content:space-between;align-items:start}
+.note ul{margin:0;padding-left:17px;font-size:13px;line-height:1.45}
+.note li+li{margin-top:2px}
+.note p{font-size:13px}
+
+/* Gates */
+.gate{display:grid;grid-template-columns:200px 1fr;gap:24px;padding-block:6px;position:relative}
+.gate::before{content:"";position:absolute;left:186px;top:0;bottom:0;width:2px;background:var(--line)}
+.gate .dia{position:absolute;left:176px;top:16px;width:22px;height:22px;background:var(--gate);transform:rotate(45deg);border-radius:2px;z-index:1}
+.gate.gl .dia{background:var(--green);outline:2px solid var(--green-ink)}
+.gate .gl-label{font-family:var(--f-mono);font-size:12px;font-weight:600;text-align:right;padding-right:36px;padding-top:15px}
+.gate-box{background:var(--surface);border:1.5px solid var(--gate);border-radius:6px;padding:12px 16px;display:grid;gap:6px;min-width:0}
+.gate.gl .gate-box{border-color:var(--green-ink)}
+.gate-box .q{font-weight:700}
+.outcomes{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:var(--muted)}
+.outcomes b{color:var(--fg)}
+
+/* Entscheidung Lieferant */
+.branch{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.branch .note{border-top:3px solid var(--pink-ink)}
+
+/* Lanes */
+.lanes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.lane{background:var(--surface);border:1px solid var(--line);border-radius:6px;overflow:hidden;display:grid;grid-template-rows:auto 1fr;min-width:0}
+.lane-head{padding:12px 14px;color:#fff;display:grid;gap:2px}
+.lane.hw .lane-head{background:var(--hw)} .lane.sw .lane-head{background:var(--sw)} .lane.pay .lane-head{background:var(--pay)}
+:root[data-theme="dark"] .lane-head{color:#15151c}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .lane-head{color:#15151c}}
+.lane-head small{font-size:12px;opacity:.92}
+.lane-body{padding:12px 14px 16px;display:grid;gap:12px;align-content:start}
+.blk h4{margin:0 0 4px;font-size:12px;font-family:var(--f-mono);letter-spacing:.04em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.blk ul{margin:0;padding-left:17px;font-size:13.5px}
+.bundle{background:var(--surface);border:1px dashed var(--line);border-radius:6px;padding:12px 16px;font-size:13.5px}
+.bundle b{font-weight:700}
+
+/* Tabellen */
+section.block{margin-top:56px;display:grid;gap:14px}
+.tbl-wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:6px}
+table{border-collapse:collapse;width:100%;min-width:860px;font-size:13px}
+th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:center}
+th{font-family:var(--f-mono);font-size:11px;letter-spacing:.03em;text-transform:uppercase;color:var(--muted);font-weight:600;background:var(--bg)}
+td:first-child,th:first-child{text-align:left;font-weight:600;position:sticky;left:0;background:var(--surface)}
+th:first-child{background:var(--bg)}
+td.R{font-weight:800;color:var(--hw)} td.A{font-weight:800;color:var(--fg)} td.C{color:var(--sw);font-weight:600} td.I{color:var(--muted)}
+.raci-key{font-size:12.5px;color:var(--muted)}
+.qs{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.qs .note{background:var(--surface);color:var(--fg);border:1px solid var(--line);box-shadow:none}
+.qs .note .t{color:var(--fg)}
+.qs .note p{color:var(--muted)}
+
+@media (max-width:860px){
+  .lanes{grid-template-columns:1fr}
+}
+@media (max-width:720px){
+  .phase,.gate{grid-template-columns:1fr;gap:10px;padding-left:22px}
+  .phase::before,.gate::before{left:4px}
+  .gate .dia{left:-2px;top:14px;width:16px;height:16px}
+  .gate .gl-label{text-align:left;padding:0}
+  .branch{grid-template-columns:1fr}
+}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">REA Card · Produktmanagement · Entwurf</div>
+  <h1>Start of Life Prozess</h1>
+  <p class="lede">Von der Produktidee bis zum Regelbetrieb. REA Card stellt weder Hardware noch Software her: wir wählen aus, beschaffen, integrieren in unsere Infrastruktur, testen mit Kunden und vermarkten. Der Ablauf ist für alle Produkte gleich. Nur Phase 4 unterscheidet sich nach Produkttyp: Hardware, Software oder Zahlungslösung.</p>
+</header>
+
+<div class="legend" aria-label="Legende">
+  <span><i class="sw-chip" style="background:var(--pink)"></i>Aktivität</span>
+  <span><i class="sw-chip" style="background:var(--blue)"></i>Dokument</span>
+  <span><i class="sw-chip" style="background:var(--green)"></i>Entscheidung Geschäftsleitung</span>
+  <span><i class="sw-chip" style="background:var(--gate);transform:rotate(45deg);width:11px;height:11px"></i>Gate (Go / No-Go)</span>
+  <span><b class="tag board">Board</b> schon auf dem Whiteboard</span>
+  <span><b class="tag new">neu</b> ergänzt</span>
+</div>
+
+<nav class="strip" aria-label="Übersicht">
+  <ol>
+    <li class="ph">0 Impuls</li><li class="arr">→</li>
+    <li class="ph doc">1 Steckbrief</li><li class="g">G1</li><li class="arr">→</li>
+    <li class="ph">2 Business Case</li><li class="g gl">G2 GL</li><li class="arr">→</li>
+    <li class="ph">3 Beschaffung &amp; Stammdaten</li><li class="arr">→</li>
+    <li class="ph split">4 HW · SW · Zahlung</li><li class="g">G3</li><li class="arr">→</li>
+    <li class="ph">5 Produkttest</li><li class="g">G4</li><li class="arr">→</li>
+    <li class="ph">6 Pilot</li><li class="g gl">G5 GL</li><li class="arr">→</li>
+    <li class="ph">7 Markteinführung</li><li class="arr">→</li>
+    <li class="ph">8 Regelbetrieb → EoL</li>
+  </ol>
+</nav>
+
+<div class="spine">
+
+<!-- 0 -->
+<div class="phase">
+  <div class="phase-head"><span class="num">PHASE 0</span><h2>Impuls</h2><span class="owner">Owner: <b>Produktmanagement</b></span></div>
+  <div class="phase-body">
+    <p class="goal">Wer kann diesen Prozess starten? Jeder im Unternehmen darf eine Idee einreichen. Ab der Einreichung übernimmt das PM und führt die Idee durch den Prozess.</p>
+    <div class="notes">
+      <div class="note"><div class="t">Quellen für Produktideen <span class="tag board">Board</span></div>
+        <ul><li>Geschäftsleitung</li><li>Vertrieb (Kundenwünsche, verlorene Deals)</li><li>Produktmanagement</li><li>Hotline (wiederkehrende Probleme)</li><li>Kundenfeedback aus Umfragen</li></ul></div>
+      <div class="note"><div class="t">Weitere Auslöser <span class="tag new">neu</span></div>
+        <ul><li>Roadmap von Hersteller oder Distributor</li><li>Regulatorik (z.B. KassenSichV, neue Vorgaben der Kartensysteme)</li><li>End of Life eines Bestandsprodukts, Nachfolger nötig</li><li>Wettbewerb bietet etwas, das uns fehlt</li></ul></div>
+      <div class="note"><div class="t">Einreichung <span class="tag new">neu</span></div>
+        <ul><li>Ein fester Kanal, z.B. Confluence-Formular oder Ideen-Board</li><li>PM bestätigt Eingang und vergibt eine ID</li><li>Ideenliste wird monatlich gesichtet</li></ul></div>
+    </div>
+  </div>
+</div>
+
+<!-- 1 -->
+<div class="phase">
+  <div class="phase-head"><span class="num">PHASE 1</span><h2>Produktsteckbrief</h2><span class="owner">Owner: <b>PM</b> · Input: Ideengeber</span></div>
+  <div class="phase-body">
+    <p class="goal">Idealerweise ein Dokument in Confluence. Es klärt den Bedarf, bevor Zeit in Bewertung oder Beschaffung fließt.</p>
+    <div class="notes">
+      <div class="note doc"><div class="t">Steckbrief in Confluence <span class="tag board">Board</span></div>
+        <ul><li>Zielsetzung</li><li>Erwartung</li><li>Mögliches Endprodukt</li><li>Klärung Bedarf</li></ul></div>
+      <div class="note doc"><div class="t">Ergänzende Felder <span class="tag new">neu</span></div>
+        <ul><li><b>Produkttyp:</b> Hardware / Software / Zahlungslösung / Bundle</li><li>Zielgruppe und Branche (Handel, Gastro, Automaten …)</li><li>Problem des Kunden in einem Satz</li><li>Bezug zum Portfolio: ersetzt, ergänzt oder neu?</li><li>Grobe Annahme zu Menge und Preis</li><li>Hersteller oder Anbieter, falls schon bekannt</li></ul></div>
+    </div>
+  </div>
+</div>
+<div class="gate"><span class="dia"></span><div class="gl-label">G1</div>
+  <div class="gate-box"><span class="q">Vorprüfung PM: Lohnt sich eine Bewertung?</span>
+    <div class="outcomes"><span><b>Go</b> → Phase 2</span><span><b>Parken</b> → Ideenliste</span><span><b>Nein</b> → Rückmeldung an Ideengeber mit Begründung</span></div></div>
+</div>
+
+<!-- 2 -->
+<div class="phase">
+  <div class="phase-head"><span class="num">PHASE 2</span><h2>Bewertung &amp; Business Case</h2><span class="owner">Owner: <b>PM</b> · mit Vertrieb, Technik, Controlling</span></div>
+  <div class="phase-body">
+    <p class="goal">Grundlage für den Antrag an die Geschäftsleitung. Kurz halten: eine bis zwei Seiten, keine Studie.</p>
+    <div class="notes">
+      <div class="note"><div class="t">Markt <span class="tag new">neu</span></div>
+        <ul><li>Wettbewerber und deren Preise</li><li>Geschätzte Stückzahl bzw. Kundenanzahl im 1. Jahr</li><li>Vertriebskanal: Direktvertrieb, Partner, Online</li></ul></div>
+      <div class="note"><div class="t">Wirtschaftlichkeit <span class="tag new">neu</span></div>
+        <ul><li>EK, geplanter VK, Marge</li><li>Einmalig vs. wiederkehrend (Miete, Lizenz, Transaktionen)</li><li>Interne Aufwände: Technik, Hotline, Logistik, Schulung</li></ul></div>
+      <div class="note"><div class="t">Machbarkeit &amp; Risiko <span class="tag new">neu</span></div>
+        <ul><li>Passt es zu unserer Infrastruktur?</li><li>Regulatorische Pflichten (siehe Phase 4)</li><li>Abhängigkeit von einem einzigen Anbieter</li><li>Wie stabil ist der Hersteller?</li></ul></div>
+    </div>
+  </div>
+</div>
+<div class="gate gl"><span class="dia"></span><div class="gl-label">G2</div>
+  <div class="gate-box"><span class="q">Antrag Geschäftsleitung <span class="tag board">Board</span></span>
+    <p style="font-size:13.5px;color:var(--muted)">GL entscheidet auf Basis von Steckbrief und Business Case und gibt das Budget für Beschaffung und Produkttest frei.</p>
+    <div class="outcomes"><span><b>Freigabe</b> → Phase 3</span><span><b>Überarbeiten</b> → zurück an PM</span><span><b>Abgelehnt</b> → dokumentiert in Confluence</span></div></div>
+</div>
+
+<!-- 3 -->
+<div class="phase">
+  <div class="phase-head"><span class="num">PHASE 3</span><h2>Beschaffung &amp; Stammdaten</h2><span class="owner">Owner: <b>Einkauf (RC)</b> · mit PM</span></div>
+  <div class="phase-body">
+    <div class="note" style="max-width:420px"><div class="t">Auswahl Lieferant notwendig? <span class="tag board">Board</span></div></div>
+    <div class="branch">
+      <div class="note"><div class="t">Ja: Artikel über Lieferant <span class="tag board">Board</span></div>
+        <p>z.B. Pulsa oder Multidata</p>
+        <ul><li>Lieferantenauswahl und EK-Preischeck durch RC Einkauf</li><li>Mindestens zwei Angebote vergleichen <span class="tag new">neu</span></li><li>Lieferzeit, Verfügbarkeit, Mindestabnahme <span class="tag new">neu</span></li></ul></div>
+      <div class="note"><div class="t">Nein: nur ein Anbieter <span class="tag board">Board</span></div>
+        <p>z.B. Software, die nur ein Unternehmen liefert</p>
+        <ul><li>Direktvertrag mit dem Hersteller <span class="tag new">neu</span></li><li>Wiederverkaufsrecht klären <span class="tag new">neu</span></li><li>Exit-Szenario, falls der Anbieter wegfällt <span class="tag new">neu</span></li></ul></div>
+    </div>
+    <div class="notes">
+      <div class="note"><div class="t">Vertrag &amp; Konditionen <span class="tag new">neu</span></div>
+        <ul><li>Rahmenvertrag, Preise, Staffeln</li><li>Garantie und RMA-Weg</li><li>SLA und Support-Zeiten</li><li>Pflicht zur EoL-Ankündigung (z.B. 12 Monate vorher)</li></ul></div>
+      <div class="note gl"><div class="t">Bestellung <span class="tag board">Board</span></div>
+        <ul><li>Testgeräte bzw. Testlizenzen für Phase 4 und 5</li><li>Menge nach Anzahl Testkunden</li></ul></div>
+      <div class="note"><div class="t">Artikel wird im Infor angelegt <span class="tag board">Board</span></div>
+        <ul><li>Status zunächst „Test“, nicht frei verkäuflich <span class="tag new">neu</span></li><li>Artikelnummern-Logik, Zubehör als eigene Artikel</li></ul></div>
+      <div class="note"><div class="t">Artikel wird in KGV angelegt <span class="tag board">Board</span></div>
+        <ul><li>Abgleich mit Infor, gleiche Artikelnummer <span class="tag new">neu</span></li></ul></div>
+    </div>
+  </div>
+</div>
+
+<!-- 4 -->
+<div class="phase">
+  <div class="phase-head"><span class="num">PHASE 4</span><h2>Prüfung &amp; Integration nach Produkttyp</h2><span class="owner">Owner: <b>PM</b> · mit Technik, Recht/Datenschutz, Logistik</span></div>
+  <div class="phase-body">
+    <p class="goal">Hier unterscheiden sich die Produkte. Ergebnis jeder Bahn: Das Produkt läuft technisch in unserer Umgebung, alle Pflichten sind geklärt und der Support-Weg steht.</p>
+    <div class="lanes">
+      <div class="lane hw"><div class="lane-head"><h3>Hardware</h3><small>Gerät, das wir weiterverkaufen oder vermieten</small></div>
+        <div class="lane-body">
+          <div class="blk"><h4>Zulassungen</h4><ul><li>CE-Konformität</li><li>Terminals: PCI PTS, EMVCo, DK-Zulassung (girocard)</li><li>Ablaufdatum der PCI-PTS-Zulassung notieren</li></ul></div>
+          <div class="blk"><h4>Pflichten als Inverkehrbringer</h4><ul><li>ElektroG / WEEE-Registrierung (stiftung ear)</li><li>Verpackungsgesetz (LUCID)</li><li>Batteriegesetz bei Akkus</li></ul></div>
+          <div class="blk"><h4>Technik</h4><ul><li>Anbindung an unseren Netzbetrieb und TMS</li><li>Kassenschnittstelle ZVT / O.P.I.</li><li>Staging: Softwareladung, Parametrierung</li></ul></div>
+          <div class="blk"><h4>Logistik &amp; Service</h4><ul><li>Lagerplatz, Mindestbestand, Wiederbeschaffungszeit</li><li>Zubehör und Ersatzteile</li><li>Reparatur, Austauschgerät (Swap)</li></ul></div>
+        </div></div>
+      <div class="lane sw"><div class="lane-head"><h3>Software</h3><small>Lizenz oder Abo eines Drittanbieters</small></div>
+        <div class="lane-body">
+          <div class="blk"><h4>Lizenz &amp; Betrieb</h4><ul><li>Lizenzmodell: Kauf, Abo, pro Gerät oder Filiale</li><li>Cloud oder lokal, Hosting-Standort</li><li>Verfügbarkeit (SLA)</li></ul></div>
+          <div class="blk"><h4>Datenschutz</h4><ul><li>DSGVO, AV-Vertrag, TOMs</li><li>Unterauftragnehmer des Anbieters</li></ul></div>
+          <div class="blk"><h4>Kassen-Compliance</h4><ul><li>KassenSichV / TSE, GoBD, DSFinV-K</li><li>Meldepflicht nach §146a AO</li></ul></div>
+          <div class="blk"><h4>Technik &amp; Support</h4><ul><li>Schnittstellen: Terminal, Warenwirtschaft, DATEV</li><li>Updates und Releases: wie oft, wer testet</li><li>1st Level REA, 2nd/3rd Level Anbieter</li><li>Einrichtung und Datenübernahme beim Kunden</li></ul></div>
+        </div></div>
+      <div class="lane pay"><div class="lane-head"><h3>Zahlungslösung</h3><small>Akzeptanz, neue Zahlarten, Acquiring-Partner</small></div>
+        <div class="lane-body">
+          <div class="blk"><h4>Rollen &amp; Regulatorik</h4><ul><li>Wer ist Vertragspartner des Händlers?</li><li>ZAG / BaFin-Relevanz prüfen</li><li>PSD2 / SCA, Geldwäsche und KYC</li><li>PCI DSS</li></ul></div>
+          <div class="blk"><h4>Kartensysteme</h4><ul><li>girocard, Visa, Mastercard, weitere Zahlarten</li><li>End-to-End-Zertifizierung Terminal bis Host</li></ul></div>
+          <div class="blk"><h4>Preismodell</h4><ul><li>Disagio, Transaktionsentgelt, Grundgebühr</li><li>Interchange++ oder Pauschale</li></ul></div>
+          <div class="blk"><h4>Prozesse</h4><ul><li>Händler-Onboarding und Risikoprüfung</li><li>Auszahlung, Chargebacks, Reporting</li><li>Händlervertrag, AGB, Preisverzeichnis</li></ul></div>
+        </div></div>
+    </div>
+    <div class="bundle"><b>Bundle (z.B. Kasse + Terminal):</b> beide Bahnen durchlaufen, zusätzlich das Zusammenspiel testen (Betrag, Storno, Tagesabschluss), einen gemeinsamen Preis festlegen und klären, wer beim Kunden der eine Ansprechpartner ist.</div>
+  </div>
+</div>
+<div class="gate"><span class="dia"></span><div class="gl-label">G3</div>
+  <div class="gate-box"><span class="q">Freigabe Produkttest: PM und Technik</span>
+    <div class="outcomes"><span><b>Go</b>, wenn Checkliste der Bahn vollständig ist</span><span><b>Stopp</b>, wenn eine Pflicht nicht erfüllbar ist</span></div></div>
+</div>
+
+<!-- 5 -->
+<div class="phase">
+  <div class="phase-head"><span class="num">PHASE 5</span><h2>Produkttest</h2><span class="owner">Owner: <b>PM</b> · mit ausgewählten Vertrieblern</span></div>
+  <div class="phase-body">
+    <p class="goal">Kleine, kontrollierte Gruppe. Frage: Funktioniert das Produkt beim echten Kunden?</p>
+    <div class="notes">
+      <div class="note"><div class="t">Produkt in Produkttestphase <span class="tag board">Board</span></div><ul><li>Status in Infor/KGV setzen</li></ul></div>
+      <div class="note"><div class="t">Auswahl Vertriebler für Produkttest <span class="tag board">Board</span></div><ul><li>2–3 Vertriebler mit passenden Kunden</li></ul></div>
+      <div class="note doc"><div class="t">Herstellerproduktblatt <span class="tag board">Board</span></div><ul><li>Reicht im Test, noch kein eigenes REA-Blatt</li></ul></div>
+      <div class="note doc"><div class="t">Preisliste Produkttest <span class="tag board">Board</span></div><ul><li>Sonderkonditionen für Testkunden</li></ul></div>
+      <div class="note"><div class="t">Testkunden &amp; Vereinbarung <span class="tag new">neu</span></div><ul><li>3–5 Kunden nach festen Kriterien</li><li>Testvereinbarung: Dauer, Rückgabe, Haftung</li></ul></div>
+      <div class="note"><div class="t">Erfolgskriterien <span class="tag new">neu</span></div><ul><li>Vorher festlegen, z.B. Störungen, Einrichtungszeit, Zufriedenheit</li><li>Feedback-Bogen, Dauer 4–8 Wochen</li><li>Ansprechpartner im Test: PM direkt</li></ul></div>
+    </div>
+  </div>
+</div>
+<div class="gate"><span class="dia"></span><div class="gl-label">G4</div>
+  <div class="gate-box"><span class="q">Auswertung Produkttest: weiter in den Pilot?</span>
+    <div class="outcomes"><span><b>Go</b> → Phase 6</span><span><b>Nachbessern</b> → Anbieter, zweite Testrunde</span><span><b>Stopp</b> → Testgeräte zurück, Lessons Learned</span></div></div>
+</div>
+
+<!-- 6 -->
+<div class="phase">
+  <div class="phase-head"><span class="num">PHASE 6</span><h2>Pilotphase</h2><span class="owner">Owner: <b>PM</b> · mit Vertrieb, Hotline, Technik</span></div>
+  <div class="phase-body">
+    <p class="goal">Größere Gruppe, aber begrenzt nach Menge oder Region. Frage: Funktionieren unsere Prozesse rund um das Produkt?</p>
+    <div class="notes">
+      <div class="note"><div class="t">Produkt ist in Pilotphase <span class="tag board">Board</span></div><ul><li>Begrenzte Stückzahl oder Region festlegen</li></ul></div>
+      <div class="note doc"><div class="t">REA Pilotproduktblatt <span class="tag board">Board</span></div><ul><li>Eigenes Layout, Nutzen statt Datenblatt</li></ul></div>
+      <div class="note doc"><div class="t">Preisliste Pilotphase <span class="tag board">Board</span></div><ul><li>Nah am späteren Listenpreis</li></ul></div>
+      <div class="note"><div class="t">Schulung Hotline <span class="tag board">Board</span></div><ul><li>Häufige Fehler, Eskalationsweg zum Anbieter</li></ul></div>
+      <div class="note"><div class="t">Schulung Vertrieb &amp; Technik <span class="tag new">neu</span></div><ul><li>Pilot-Vertriebler: Argumente, Zielkunden</li><li>Technik/Außendienst: Installation</li></ul></div>
+      <div class="note"><div class="t">Support vorbereiten <span class="tag new">neu</span></div><ul><li>FAQ in der Wissensdatenbank</li><li>Eigene Ticket-Kategorie</li></ul></div>
+      <div class="note"><div class="t">Pilot-KPIs <span class="tag new">neu</span></div><ul><li>Tickets pro Kunde, Störungsquote</li><li>Abschlussquote im Vertrieb, Marge</li></ul></div>
+    </div>
+  </div>
+</div>
+<div class="gate gl"><span class="dia"></span><div class="gl-label">G5</div>
+  <div class="gate-box"><span class="q">Freigabe Markteinführung durch die GL</span>
+    <div class="outcomes"><span><b>Go</b> → Phase 7</span><span><b>Pilot verlängern</b></span><span><b>Stopp</b> → Ausstieg mit Pilotkunden geregelt</span></div></div>
+</div>
+
+<!-- 7 -->
+<div class="phase">
+  <div class="phase-head"><span class="num">PHASE 7</span><h2>Markteinführung</h2><span class="owner">Owner: <b>PM</b> · mit Marketing, Vertrieb</span></div>
+  <div class="phase-body">
+    <div class="notes">
+      <div class="note doc"><div class="t">Finales REA Produktblatt <span class="tag new">neu</span></div></div>
+      <div class="note doc"><div class="t">Offizielle Preisliste <span class="tag new">neu</span></div><ul><li>Artikelstatus in Infor/KGV auf „aktiv“</li></ul></div>
+      <div class="note"><div class="t">Vertriebsschulung für alle <span class="tag new">neu</span></div></div>
+      <div class="note"><div class="t">Marketing <span class="tag new">neu</span></div><ul><li>Website, Newsletter, Partner, Messen</li></ul></div>
+      <div class="note"><div class="t">Verträge final <span class="tag new">neu</span></div><ul><li>AGB, Kundenvertrag, ggf. Händlervertrag</li></ul></div>
+      <div class="note"><div class="t">Bestand &amp; interne Ankündigung <span class="tag new">neu</span></div><ul><li>Erstbestellung nach Absatzplan</li><li>Info an alle Abteilungen</li></ul></div>
+    </div>
+  </div>
+</div>
+
+<!-- 8 -->
+<div class="phase">
+  <div class="phase-head"><span class="num">PHASE 8</span><h2>Regelbetrieb</h2><span class="owner">Owner: <b>PM</b></span></div>
+  <div class="phase-body">
+    <div class="notes">
+      <div class="note"><div class="t">Review nach 3 und 12 Monaten <span class="tag new">neu</span></div><ul><li>Absatz und Marge gegen Business Case</li><li>Tickets, Rückläufer</li></ul></div>
+      <div class="note"><div class="t">Übergabe an Lifecycle <span class="tag new">neu</span></div><ul><li>Laufende Pflege: Preise, Updates, Zulassungen</li><li>Hersteller-EoL oder Zulassungsende startet den End of Life Prozess</li></ul></div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<section class="block">
+  <div><div class="eyebrow">Rollen</div><h2>Wer macht was</h2></div>
+  <p class="raci-key"><b style="color:var(--hw)">R</b> führt aus · <b>A</b> verantwortet / entscheidet · <b style="color:var(--sw)">C</b> wird gefragt · I wird informiert</p>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Phase</th><th>GL</th><th>PM</th><th>Einkauf</th><th>Vertrieb</th><th>Technik</th><th>Hotline</th><th>Logistik</th><th>Marketing</th><th>Controlling</th><th>Recht / DS</th></tr></thead>
+    <tbody>
+      <tr><td>0 Impuls</td><td class="I">I</td><td class="A">A</td><td></td><td class="C">C</td><td></td><td class="C">C</td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>1 Steckbrief</td><td></td><td class="A">A/R</td><td></td><td class="C">C</td><td class="C">C</td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>2 Business Case · G2</td><td class="A">A</td><td class="R">R</td><td class="C">C</td><td class="C">C</td><td class="C">C</td><td></td><td></td><td></td><td class="C">C</td><td class="C">C</td></tr>
+      <tr><td>3 Beschaffung &amp; Stammdaten</td><td class="I">I</td><td class="A">A</td><td class="R">R</td><td></td><td></td><td></td><td class="C">C</td><td></td><td class="C">C</td><td class="C">C</td></tr>
+      <tr><td>4 Prüfung &amp; Integration</td><td></td><td class="A">A</td><td class="C">C</td><td></td><td class="R">R</td><td class="C">C</td><td class="R">R</td><td></td><td></td><td class="R">R</td></tr>
+      <tr><td>5 Produkttest</td><td class="I">I</td><td class="A">A</td><td></td><td class="R">R</td><td class="C">C</td><td class="I">I</td><td class="C">C</td><td></td><td></td><td></td></tr>
+      <tr><td>6 Pilot · G5</td><td class="A">A</td><td class="R">R</td><td></td><td class="R">R</td><td class="R">R</td><td class="R">R</td><td class="C">C</td><td class="C">C</td><td class="C">C</td><td></td></tr>
+      <tr><td>7 Markteinführung</td><td class="I">I</td><td class="A">A</td><td class="C">C</td><td class="R">R</td><td class="C">C</td><td class="C">C</td><td class="R">R</td><td class="R">R</td><td></td><td class="C">C</td></tr>
+      <tr><td>8 Regelbetrieb</td><td class="I">I</td><td class="A">A/R</td><td class="C">C</td><td class="C">C</td><td class="C">C</td><td class="C">C</td><td></td><td></td><td class="C">C</td><td></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="block">
+  <div><div class="eyebrow">Zu klären</div><h2>Offene Fragen für den nächsten Workshop</h2></div>
+  <div class="qs">
+    <div class="note"><div class="t">Bestellung vor oder nach G2?</div><p>Auf dem Board folgt die Bestellung direkt auf den GL-Antrag. Gilt das auch für kleine Testmengen, oder darf PM bis zu einem Betrag selbst bestellen?</p></div>
+    <div class="note"><div class="t">Wann in Infor und KGV anlegen?</div><p>Schon für den Test (Status „Test“) oder erst zum Pilot? Ohne Artikel keine Testrechnung.</p></div>
+    <div class="note"><div class="t">Produkttest und Pilot: Unterschied?</div><p>Vorschlag: Test prüft das Produkt, Pilot prüft unsere Prozesse. Anzahl Kunden und Dauer pro Stufe festlegen.</p></div>
+    <div class="note"><div class="t">Wer entscheidet an G1, G3, G4?</div><p>Nur PM, oder ein kleines Produktgremium aus PM, Vertrieb und Technik?</p></div>
+    <div class="note"><div class="t">Schnellspur für kleine Produkte</div><p>Zubehör oder ein neues Modell eines bekannten Herstellers braucht nicht alle Phasen. Kriterien für eine verkürzte Variante festlegen.</p></div>
+    <div class="note"><div class="t">Wo liegt der Status?</div><p>Ein Confluence-Board oder eine Liste mit allen Produkten im Prozess, Phase und nächstem Gate.</p></div>
+  </div>
+</section>
+</div>
