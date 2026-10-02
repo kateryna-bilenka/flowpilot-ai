@@ -175,25 +175,28 @@ flowchart TD
 
   T{"4 Produkttyp?"}:::gate
   subgraph HW["Hardware"]
+    H0["&lt;b&gt;Ausstattung und Lieferumfang&lt;/b&gt;&lt;br/&gt;Modell · LAN/WLAN/LTE · Drucker&lt;br/&gt;Netzteil · Ladestation · Halterung&lt;br/&gt;Papierrollen · SIM · Verpackung"]:::hw
     H1["Zulassungen&lt;br/&gt;CE · PCI PTS · DK"]:::hw
     H2["ElektroG / WEEE&lt;br/&gt;VerpackG"]:::hw
     H3["Netzbetrieb · TMS&lt;br/&gt;ZVT / O.P.I. · Staging"]:::hw
     H4["Lager · Ersatzteile&lt;br/&gt;RMA · Swap"]:::hw
-    H1 --> H2 --> H3 --> H4
+    H0 --> H1 --> H2 --> H3 --> H4
   end
   subgraph SW["Software"]
+    S0["&lt;b&gt;Leistungsumfang&lt;/b&gt;&lt;br/&gt;Module · Pakete · Add-ons&lt;br/&gt;Anzahl Geräte / Nutzer&lt;br/&gt;Einrichtung inklusive?"]:::sw
     S1["Lizenzmodell&lt;br/&gt;Cloud / lokal · SLA"]:::sw
     S2["DSGVO · AVV"]:::sw
     S3["KassenSichV / TSE&lt;br/&gt;GoBD · DSFinV-K"]:::sw
     S4["Schnittstellen · Updates&lt;br/&gt;Support 1st/2nd Level"]:::sw
-    S1 --> S2 --> S3 --> S4
+    S0 --> S1 --> S2 --> S3 --> S4
   end
   subgraph PAY["Zahlungslösung"]
+    P0["&lt;b&gt;Leistungsumfang&lt;/b&gt;&lt;br/&gt;Zahlarten · Kartenarten&lt;br/&gt;Kanäle: vor Ort / online&lt;br/&gt;passende Terminals"]:::pay
     P1["Rollenmodell&lt;br/&gt;Vertragspartner Händler"]:::pay
     P2["ZAG/BaFin · PSD2&lt;br/&gt;KYC · PCI DSS"]:::pay
     P3["Kartensysteme&lt;br/&gt;Zertifizierung E2E"]:::pay
     P4["Preismodell · Onboarding&lt;br/&gt;Settlement · Chargebacks"]:::pay
-    P1 --> P2 --> P3 --> P4
+    P0 --> P1 --> P2 --> P3 --> P4
   end
   G3{"G3&lt;br/&gt;Freigabe&lt;br/&gt;Produkttest"}:::gate
 
@@ -230,9 +233,9 @@ flowchart TD
   D -- Ja --> D1 --> V
   D -- Nein --> D2 --> V
   V --> E --> F1 --> F2 --> T
-  T -- Hardware --> H1
-  T -- Software --> S1
-  T -- Zahlung --> P1
+  T -- Hardware --> H0
+  T -- Software --> S0
+  T -- Zahlung --> P0
   H4 --> G3
   S4 --> G3
   P4 --> G3
@@ -368,6 +371,7 @@ flowchart TD
     <div class="lanes">
       <div class="lane hw"><div class="lane-head"><h3>Hardware</h3><small>Gerät, das wir weiterverkaufen oder vermieten</small></div>
         <div class="lane-body">
+          <div class="blk"><h4>Ausstattung &amp; Lieferumfang <span class="tag new">neu</span></h4><ul><li>Modell und Varianten: LAN, WLAN, LTE, mit oder ohne Drucker</li><li>Zubehör: Netzteil, Ladestation, Halterung, Kabel, PIN-Pad-Sichtschutz</li><li>Verbrauchsmaterial: Papierrollen</li><li>SIM-Karte und Datentarif</li><li>Verpackung, Etikett, Kurzanleitung auf Deutsch</li><li>Was ist Standard, was Zubehör gegen Aufpreis?</li></ul></div>
           <div class="blk"><h4>Zulassungen</h4><ul><li>CE-Konformität</li><li>Terminals: PCI PTS, EMVCo, DK-Zulassung (girocard)</li><li>Ablaufdatum der PCI-PTS-Zulassung notieren</li></ul></div>
           <div class="blk"><h4>Pflichten als Inverkehrbringer</h4><ul><li>ElektroG / WEEE-Registrierung (stiftung ear)</li><li>Verpackungsgesetz (LUCID)</li><li>Batteriegesetz bei Akkus</li></ul></div>
           <div class="blk"><h4>Technik</h4><ul><li>Anbindung an unseren Netzbetrieb und TMS</li><li>Kassenschnittstelle ZVT / O.P.I.</li><li>Staging: Softwareladung, Parametrierung</li></ul></div>
@@ -375,6 +379,7 @@ flowchart TD
         </div></div>
       <div class="lane sw"><div class="lane-head"><h3>Software</h3><small>Lizenz oder Abo eines Drittanbieters</small></div>
         <div class="lane-body">
+          <div class="blk"><h4>Leistungsumfang <span class="tag new">neu</span></h4><ul><li>Module, Pakete, Add-ons</li><li>Anzahl Geräte, Kassenplätze, Nutzer</li><li>Einrichtung und Schulung inklusive?</li></ul></div>
           <div class="blk"><h4>Lizenz &amp; Betrieb</h4><ul><li>Lizenzmodell: Kauf, Abo, pro Gerät oder Filiale</li><li>Cloud oder lokal, Hosting-Standort</li><li>Verfügbarkeit (SLA)</li></ul></div>
           <div class="blk"><h4>Datenschutz</h4><ul><li>DSGVO, AV-Vertrag, TOMs</li><li>Unterauftragnehmer des Anbieters</li></ul></div>
           <div class="blk"><h4>Kassen-Compliance</h4><ul><li>KassenSichV / TSE, GoBD, DSFinV-K</li><li>Meldepflicht nach §146a AO</li></ul></div>
@@ -382,6 +387,7 @@ flowchart TD
         </div></div>
       <div class="lane pay"><div class="lane-head"><h3>Zahlungslösung</h3><small>Akzeptanz, neue Zahlarten, Acquiring-Partner</small></div>
         <div class="lane-body">
+          <div class="blk"><h4>Leistungsumfang <span class="tag new">neu</span></h4><ul><li>Zahl- und Kartenarten im Paket</li><li>Kanäle: vor Ort, online, Pay-by-Link</li><li>Welche Terminals unterstützt werden</li></ul></div>
           <div class="blk"><h4>Rollen &amp; Regulatorik</h4><ul><li>Wer ist Vertragspartner des Händlers?</li><li>ZAG / BaFin-Relevanz prüfen</li><li>PSD2 / SCA, Geldwäsche und KYC</li><li>PCI DSS</li></ul></div>
           <div class="blk"><h4>Kartensysteme</h4><ul><li>girocard, Visa, Mastercard, weitere Zahlarten</li><li>End-to-End-Zertifizierung Terminal bis Host</li></ul></div>
           <div class="blk"><h4>Preismodell</h4><ul><li>Disagio, Transaktionsentgelt, Grundgebühr</li><li>Interchange++ oder Pauschale</li></ul></div>
