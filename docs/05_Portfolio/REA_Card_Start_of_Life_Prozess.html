@@ -51,7 +51,7 @@ header{display:grid;gap:8px;margin-bottom:28px}
 
 /* Übersichtsstreifen */
 .strip{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px;margin-bottom:40px}
-.strip ol{list-style:none;margin:0;padding:0;display:flex;align-items:center;gap:6px;min-width:1040px}
+.strip ol{list-style:none;margin:0;padding:0;display:flex;align-items:center;gap:6px;min-width:1240px}
 .strip li{font-size:12.5px;font-weight:600;white-space:nowrap}
 .strip .ph{padding:6px 10px;border-radius:3px;background:var(--pink);color:var(--pink-ink)}
 .strip .ph.doc{background:var(--blue);color:var(--blue-ink)}
@@ -154,7 +154,7 @@ td.R{font-weight:800;color:var(--hw)} td.A{font-weight:800;color:var(--fg)} td.C
 </div>
 
 <section class="schema" aria-label="Prozessschema">
-  <div class="schema-head"><div class="eyebrow">Schema</div><h2>Ablauf auf einen Blick</h2><p class="raci-key">Rauten = Entscheidung · grün = Geschäftsleitung · gestrichelt = Rücksprung. Details zu jedem Schritt stehen weiter unten.</p></div>
+  <div class="schema-head"><div class="eyebrow">Schema</div><h2>Ablauf auf einen Blick</h2><p class="raci-key">Rauten = Entscheidung · vier Stufen: Prototyp (1–3), Produkttest (&gt;10), Pilotierung (&gt;30), MP · grün = Geschäftsleitung · gestrichelt = Rücksprung. Details zu jedem Schritt stehen weiter unten.</p></div>
   <div class="schema-canvas">
 <pre class="mermaid">
 flowchart TD
@@ -198,30 +198,39 @@ flowchart TD
     P4["Preismodell · Onboarding&lt;br/&gt;Settlement · Chargebacks"]:::pay
     P0 --> P1 --> P2 --> P3 --> P4
   end
-  G3{"G3&lt;br/&gt;Freigabe&lt;br/&gt;Produkttest"}:::gate
+  G3{"G3&lt;br/&gt;Freigabe&lt;br/&gt;Prototyp"}:::gate
 
-  subgraph PT["5 Produkttest"]
+  subgraph PR["5 Prototyp · 1–3"]
+    Q1["Produkt in&lt;br/&gt;Prototypphase"]:::act
+    Q2["1–3 Geräte / Lizenzen&lt;br/&gt;intern oder bei&lt;br/&gt;1–3 Bestandskunden"]:::act
+    Q3["Herstellerproduktblatt&lt;br/&gt;nur intern"]:::doc
+    Q4["Betreuung direkt&lt;br/&gt;durch PM und Technik"]:::act
+    Q1 --> Q2 --> Q3 --> Q4
+  end
+  G4{"G4&lt;br/&gt;Freigabe&lt;br/&gt;Produkttest"}:::gate
+
+  subgraph PT["6 Produkttest · mehr als 10"]
     T1["Produkt in&lt;br/&gt;Produkttestphase"]:::act
     T2["Auswahl Vertriebler&lt;br/&gt;für Produkttest"]:::act
     T3["Herstellerproduktblatt"]:::doc
     T4["Preisliste Produkttest"]:::doc
-    T5["3–5 Testkunden&lt;br/&gt;Erfolgskriterien"]:::act
+    T5["Hotline und andere&lt;br/&gt;Abteilungen eingebunden"]:::act
     T1 --> T2 --> T3 --> T4 --> T5
   end
-  G4{"G4&lt;br/&gt;Auswertung&lt;br/&gt;Test"}:::gate
+  G5{"G5&lt;br/&gt;Freigabe&lt;br/&gt;Pilotierung"}:::gate
 
-  subgraph PI["6 Pilotphase"]
+  subgraph PI["7 Pilotierung · mehr als 30"]
     L1["Produkt ist in&lt;br/&gt;Pilotphase"]:::act
     L2["REA Pilotproduktblatt"]:::doc
     L3["Preisliste Pilotphase"]:::doc
-    L4["Schulung Hotline&lt;br/&gt;Vertrieb · Technik"]:::act
-    L5["Pilot-KPIs messen"]:::act
+    L4["Eigene Verträge&lt;br/&gt;mit Pilotkunden"]:::act
+    L5["Schulung Hotline&lt;br/&gt;Vertrieb · Technik"]:::act
     L1 --> L2 --> L3 --> L4 --> L5
   end
-  G5{"G5&lt;br/&gt;Freigabe&lt;br/&gt;Geschäftsleitung"}:::gl
+  G6{"G6&lt;br/&gt;Freigabe&lt;br/&gt;Geschäftsleitung"}:::gl
 
-  M["&lt;b&gt;7 Markteinführung&lt;/b&gt;&lt;br/&gt;REA Produktblatt · Preisliste&lt;br/&gt;Schulung alle · Marketing"]:::act
-  R["&lt;b&gt;8 Regelbetrieb&lt;/b&gt;&lt;br/&gt;Review nach 3 und 12 Monaten"]:::act
+  M["&lt;b&gt;8 MP · Markteinführung&lt;/b&gt;&lt;br/&gt;REA Produktblatt · Preisliste&lt;br/&gt;Schulung alle · Marketing"]:::act
+  R["&lt;b&gt;9 Regelbetrieb&lt;/b&gt;&lt;br/&gt;Review nach 3 und 12 Monaten"]:::act
   EOL(["End of Life Prozess"]):::stop
 
   A --> B --> G1
@@ -239,16 +248,19 @@ flowchart TD
   H4 --> G3
   S4 --> G3
   P4 --> G3
-  G3 -- Go --> T1
+  G3 -- Go --> Q1
   G3 -- Stopp --> X
-  T5 --> G4
-  G4 -. Nachbessern .-> T1
+  Q4 --> G4
+  G4 -. Nachbessern .-> Q1
   G4 -- Stopp --> X
-  G4 -- Go --> L1
-  L5 --> G5
-  G5 -. Pilot verlängern .-> L1
-  G5 -- Go --> M --> R --> EOL
-
+  G4 -- Go --> T1
+  T5 --> G5
+  G5 -. Nachbessern .-> T1
+  G5 -- Stopp --> X
+  G5 -- Go --> L1
+  L5 --> G6
+  G6 -. Pilot verlängern .-> L1
+  G6 -- Go --> M --> R --> EOL
   classDef act fill:#fbd3ea,stroke:#b4508a,color:#3d1029
   classDef doc fill:#d3e3fb,stroke:#4d7cc4,color:#14294a
   classDef gl fill:#d6f1a8,stroke:#5d8a1c,color:#22380a
@@ -260,6 +272,7 @@ flowchart TD
   style HW fill:#fff6f3,stroke:#e0573a
   style SW fill:#f4f7fe,stroke:#3b6fd8
   style PAY fill:#f2fbf7,stroke:#1f9a6b
+  style PR fill:#fdf6fa,stroke:#b4508a
   style PT fill:#fdf6fa,stroke:#b4508a
   style PI fill:#fdf6fa,stroke:#b4508a
 </pre>
@@ -271,14 +284,28 @@ flowchart TD
     <li class="ph">0 Impuls</li><li class="arr">→</li>
     <li class="ph doc">1 Steckbrief</li><li class="g">G1</li><li class="arr">→</li>
     <li class="ph">2 Business Case</li><li class="g gl">G2 GL</li><li class="arr">→</li>
-    <li class="ph">3 Beschaffung &amp; Stammdaten</li><li class="arr">→</li>
+    <li class="ph">3 Beschaffung</li><li class="arr">→</li>
     <li class="ph split">4 HW · SW · Zahlung</li><li class="g">G3</li><li class="arr">→</li>
-    <li class="ph">5 Produkttest</li><li class="g">G4</li><li class="arr">→</li>
-    <li class="ph">6 Pilot</li><li class="g gl">G5 GL</li><li class="arr">→</li>
-    <li class="ph">7 Markteinführung</li><li class="arr">→</li>
-    <li class="ph">8 Regelbetrieb → EoL</li>
+    <li class="ph">5 Prototyp 1–3</li><li class="g">G4</li><li class="arr">→</li>
+    <li class="ph">6 Produkttest &gt;10</li><li class="g">G5</li><li class="arr">→</li>
+    <li class="ph">7 Pilotierung &gt;30</li><li class="g gl">G6 GL</li><li class="arr">→</li>
+    <li class="ph">8 MP</li><li class="arr">→</li>
+    <li class="ph">9 Regelbetrieb → EoL</li>
   </ol>
 </nav>
+
+<section class="block" style="margin-top:0;margin-bottom:40px">
+  <div><div class="eyebrow">Vier Stufen bis zum Markt</div><h2>Prototyp · Produkttest · Pilotierung · MP</h2></div>
+  <div class="tbl-wrap"><table class="stages">
+    <thead><tr><th>Stufe</th><th>Anzahl</th><th>Wer ist beteiligt</th><th>Vertrag mit Kunde</th><th>Unterlagen</th><th>Frage dieser Stufe</th></tr></thead>
+    <tbody>
+      <tr><td>5 Prototyp</td><td>1–3</td><td>PM, Technik</td><td>keiner oder kurze Absprache</td><td>Herstellerproduktblatt (intern)</td><td>Läuft es technisch bei uns?</td></tr>
+      <tr><td>6 Produkttest</td><td>mehr als 10</td><td>mehr Vertriebler, Hotline, andere Abteilungen</td><td>Testvereinbarung</td><td>Herstellerproduktblatt, Preisliste Produkttest</td><td>Funktioniert es beim echten Kunden?</td></tr>
+      <tr><td>7 Pilotierung</td><td>mehr als 30</td><td>mehr Vertrieb, Hotline geschult, Technik, Logistik</td><td>eigene Verträge</td><td>REA Pilotproduktblatt, Preisliste Pilotphase</td><td>Funktionieren unsere Prozesse?</td></tr>
+      <tr><td>8 MP</td><td>offen</td><td>alle Abteilungen</td><td>Standardverträge</td><td>REA Produktblatt, offizielle Preisliste</td><td>Verkauft es sich wie geplant?</td></tr>
+    </tbody>
+  </table></div>
+</section>
 
 <div class="spine">
 
@@ -398,69 +425,87 @@ flowchart TD
   </div>
 </div>
 <div class="gate"><span class="dia"></span><div class="gl-label">G3</div>
-  <div class="gate-box"><span class="q">Freigabe Produkttest: PM und Technik</span>
+  <div class="gate-box"><span class="q">Freigabe Prototyp: PM und Technik</span>
     <div class="outcomes"><span><b>Go</b>, wenn Checkliste der Bahn vollständig ist</span><span><b>Stopp</b>, wenn eine Pflicht nicht erfüllbar ist</span></div></div>
 </div>
 
 <!-- 5 -->
 <div class="phase">
-  <div class="phase-head"><span class="num">PHASE 5</span><h2>Produkttest</h2><span class="owner">Owner: <b>PM</b> · mit ausgewählten Vertrieblern</span></div>
+  <div class="phase-head"><span class="num">PHASE 5</span><h2>Prototyp</h2><span class="owner">1–3 Geräte bzw. Kunden · Owner: <b>PM</b> · mit Technik</span></div>
   <div class="phase-body">
-    <p class="goal">Kleine, kontrollierte Gruppe. Frage: Funktioniert das Produkt beim echten Kunden?</p>
+    <p class="goal">Kleinster Kreis. Frage: Läuft das Produkt technisch in unserer Umgebung? Noch ohne Hotline und ohne Vertrieb in der Breite.</p>
     <div class="notes">
-      <div class="note"><div class="t">Produkt in Produkttestphase <span class="tag board">Board</span></div><ul><li>Status in Infor/KGV setzen</li></ul></div>
-      <div class="note"><div class="t">Auswahl Vertriebler für Produkttest <span class="tag board">Board</span></div><ul><li>2–3 Vertriebler mit passenden Kunden</li></ul></div>
-      <div class="note doc"><div class="t">Herstellerproduktblatt <span class="tag board">Board</span></div><ul><li>Reicht im Test, noch kein eigenes REA-Blatt</li></ul></div>
-      <div class="note doc"><div class="t">Preisliste Produkttest <span class="tag board">Board</span></div><ul><li>Sonderkonditionen für Testkunden</li></ul></div>
-      <div class="note"><div class="t">Testkunden &amp; Vereinbarung <span class="tag new">neu</span></div><ul><li>3–5 Kunden nach festen Kriterien</li><li>Testvereinbarung: Dauer, Rückgabe, Haftung</li></ul></div>
-      <div class="note"><div class="t">Erfolgskriterien <span class="tag new">neu</span></div><ul><li>Vorher festlegen, z.B. Störungen, Einrichtungszeit, Zufriedenheit</li><li>Feedback-Bogen, Dauer 4–8 Wochen</li><li>Ansprechpartner im Test: PM direkt</li></ul></div>
+      <div class="note"><div class="t">Produkt in Prototypphase <span class="tag new">neu</span></div><ul><li>1–3 Geräte bzw. Lizenzen</li><li>Intern oder bei 1–3 vertrauten Bestandskunden</li></ul></div>
+      <div class="note doc"><div class="t">Herstellerproduktblatt <span class="tag board">Board</span></div><ul><li>Nur intern</li></ul></div>
+      <div class="note"><div class="t">Betreuung direkt <span class="tag new">neu</span></div><ul><li>PM und Technik sind Ansprechpartner</li><li>Fehlerliste an den Hersteller</li></ul></div>
+      <div class="note"><div class="t">Ergebnis <span class="tag new">neu</span></div><ul><li>Installationsanleitung intern</li><li>Bekannte Fehler und Workarounds</li></ul></div>
     </div>
   </div>
 </div>
 <div class="gate"><span class="dia"></span><div class="gl-label">G4</div>
-  <div class="gate-box"><span class="q">Auswertung Produkttest: weiter in den Pilot?</span>
-    <div class="outcomes"><span><b>Go</b> → Phase 6</span><span><b>Nachbessern</b> → Anbieter, zweite Testrunde</span><span><b>Stopp</b> → Testgeräte zurück, Lessons Learned</span></div></div>
+  <div class="gate-box"><span class="q">Auswertung Prototyp: weiter in den Produkttest?</span>
+    <div class="outcomes"><span><b>Go</b> → Phase 6</span><span><b>Nachbessern</b> → Hersteller, neuer Prototyp</span><span><b>Stopp</b> → Geräte zurück, Lessons Learned</span></div></div>
 </div>
 
 <!-- 6 -->
 <div class="phase">
-  <div class="phase-head"><span class="num">PHASE 6</span><h2>Pilotphase</h2><span class="owner">Owner: <b>PM</b> · mit Vertrieb, Hotline, Technik</span></div>
+  <div class="phase-head"><span class="num">PHASE 6</span><h2>Produkttest</h2><span class="owner">mehr als 10 · Owner: <b>PM</b> · mit Vertrieb, Hotline, weiteren Abteilungen</span></div>
   <div class="phase-body">
-    <p class="goal">Größere Gruppe, aber begrenzt nach Menge oder Region. Frage: Funktionieren unsere Prozesse rund um das Produkt?</p>
+    <p class="goal">Mehr Kunden, mehr Beteiligte. Hotline und andere Abteilungen sind jetzt eingebunden. Frage: Funktioniert das Produkt beim echten Kunden?</p>
     <div class="notes">
-      <div class="note"><div class="t">Produkt ist in Pilotphase <span class="tag board">Board</span></div><ul><li>Begrenzte Stückzahl oder Region festlegen</li></ul></div>
-      <div class="note doc"><div class="t">REA Pilotproduktblatt <span class="tag board">Board</span></div><ul><li>Eigenes Layout, Nutzen statt Datenblatt</li></ul></div>
-      <div class="note doc"><div class="t">Preisliste Pilotphase <span class="tag board">Board</span></div><ul><li>Nah am späteren Listenpreis</li></ul></div>
-      <div class="note"><div class="t">Schulung Hotline <span class="tag board">Board</span></div><ul><li>Häufige Fehler, Eskalationsweg zum Anbieter</li></ul></div>
-      <div class="note"><div class="t">Schulung Vertrieb &amp; Technik <span class="tag new">neu</span></div><ul><li>Pilot-Vertriebler: Argumente, Zielkunden</li><li>Technik/Außendienst: Installation</li></ul></div>
-      <div class="note"><div class="t">Support vorbereiten <span class="tag new">neu</span></div><ul><li>FAQ in der Wissensdatenbank</li><li>Eigene Ticket-Kategorie</li></ul></div>
-      <div class="note"><div class="t">Pilot-KPIs <span class="tag new">neu</span></div><ul><li>Tickets pro Kunde, Störungsquote</li><li>Abschlussquote im Vertrieb, Marge</li></ul></div>
+      <div class="note"><div class="t">Produkt in Produkttestphase <span class="tag board">Board</span></div><ul><li>Status in Infor/KGV setzen</li><li>Mehr als 10 Kunden</li></ul></div>
+      <div class="note"><div class="t">Auswahl Vertriebler für Produkttest <span class="tag board">Board</span></div><ul><li>Mehr Vertriebler als im Prototyp</li></ul></div>
+      <div class="note doc"><div class="t">Herstellerproduktblatt <span class="tag board">Board</span></div><ul><li>Reicht im Test, noch kein eigenes REA-Blatt</li></ul></div>
+      <div class="note doc"><div class="t">Preisliste Produkttest <span class="tag board">Board</span></div><ul><li>Sonderkonditionen für Testkunden</li></ul></div>
+      <div class="note"><div class="t">Hotline und andere Abteilungen <span class="tag new">neu</span></div><ul><li>Hotline nimmt erste Tickets an</li><li>Logistik, Technik, Buchhaltung kennen den Artikel</li></ul></div>
+      <div class="note"><div class="t">Testvereinbarung &amp; Kriterien <span class="tag new">neu</span></div><ul><li>Dauer, Rückgabe, Haftung</li><li>Erfolgskriterien vorher festlegen</li><li>Feedback-Bogen</li></ul></div>
     </div>
   </div>
 </div>
-<div class="gate gl"><span class="dia"></span><div class="gl-label">G5</div>
-  <div class="gate-box"><span class="q">Freigabe Markteinführung durch die GL</span>
-    <div class="outcomes"><span><b>Go</b> → Phase 7</span><span><b>Pilot verlängern</b></span><span><b>Stopp</b> → Ausstieg mit Pilotkunden geregelt</span></div></div>
+<div class="gate"><span class="dia"></span><div class="gl-label">G5</div>
+  <div class="gate-box"><span class="q">Auswertung Produkttest: weiter in die Pilotierung?</span>
+    <div class="outcomes"><span><b>Go</b> → Phase 7</span><span><b>Nachbessern</b> → zweite Testrunde</span><span><b>Stopp</b> → Testgeräte zurück, Lessons Learned</span></div></div>
 </div>
 
 <!-- 7 -->
 <div class="phase">
-  <div class="phase-head"><span class="num">PHASE 7</span><h2>Markteinführung</h2><span class="owner">Owner: <b>PM</b> · mit Marketing, Vertrieb</span></div>
+  <div class="phase-head"><span class="num">PHASE 7</span><h2>Pilotierung</h2><span class="owner">mehr als 30 · Owner: <b>PM</b> · mit Vertrieb, Hotline, Technik</span></div>
+  <div class="phase-body">
+    <p class="goal">Noch mehr Kunden, jetzt mit eigenen Verträgen. Frage: Funktionieren unsere Prozesse rund um das Produkt?</p>
+    <div class="notes">
+      <div class="note"><div class="t">Produkt ist in Pilotphase <span class="tag board">Board</span></div><ul><li>Mehr als 30 Kunden</li><li>Begrenzt nach Menge oder Region</li></ul></div>
+      <div class="note doc"><div class="t">REA Pilotproduktblatt <span class="tag board">Board</span></div><ul><li>Eigenes Layout, Nutzen statt Datenblatt</li></ul></div>
+      <div class="note doc"><div class="t">Preisliste Pilotphase <span class="tag board">Board</span></div><ul><li>Nah am späteren Listenpreis</li></ul></div>
+      <div class="note"><div class="t">Eigene Verträge <span class="tag board">Notiz</span></div><ul><li>Pilotkunden bekommen REA-Verträge statt Testvereinbarung</li></ul></div>
+      <div class="note"><div class="t">Schulung Hotline <span class="tag board">Board</span></div><ul><li>Häufige Fehler, Eskalationsweg zum Anbieter</li></ul></div>
+      <div class="note"><div class="t">Schulung Vertrieb &amp; Technik <span class="tag new">neu</span></div><ul><li>Pilot-Vertriebler: Argumente, Zielkunden</li><li>Technik/Außendienst: Installation</li></ul></div>
+      <div class="note"><div class="t">Pilot-KPIs <span class="tag new">neu</span></div><ul><li>Tickets pro Kunde, Störungsquote</li><li>Abschlussquote im Vertrieb, Marge</li></ul></div>
+    </div>
+  </div>
+</div>
+<div class="gate gl"><span class="dia"></span><div class="gl-label">G6</div>
+  <div class="gate-box"><span class="q">Freigabe Markteinführung durch die GL</span>
+    <div class="outcomes"><span><b>Go</b> → Phase 8</span><span><b>Pilot verlängern</b></span><span><b>Stopp</b> → Ausstieg mit Pilotkunden geregelt</span></div></div>
+</div>
+
+<!-- 8 -->
+<div class="phase">
+  <div class="phase-head"><span class="num">PHASE 8</span><h2>MP · Markteinführung</h2><span class="owner">Owner: <b>PM</b> · mit Marketing, Vertrieb</span></div>
   <div class="phase-body">
     <div class="notes">
       <div class="note doc"><div class="t">Finales REA Produktblatt <span class="tag new">neu</span></div></div>
       <div class="note doc"><div class="t">Offizielle Preisliste <span class="tag new">neu</span></div><ul><li>Artikelstatus in Infor/KGV auf „aktiv“</li></ul></div>
       <div class="note"><div class="t">Vertriebsschulung für alle <span class="tag new">neu</span></div></div>
       <div class="note"><div class="t">Marketing <span class="tag new">neu</span></div><ul><li>Website, Newsletter, Partner, Messen</li></ul></div>
-      <div class="note"><div class="t">Verträge final <span class="tag new">neu</span></div><ul><li>AGB, Kundenvertrag, ggf. Händlervertrag</li></ul></div>
+      <div class="note"><div class="t">Standardverträge <span class="tag new">neu</span></div><ul><li>AGB, Kundenvertrag, ggf. Händlervertrag</li></ul></div>
       <div class="note"><div class="t">Bestand &amp; interne Ankündigung <span class="tag new">neu</span></div><ul><li>Erstbestellung nach Absatzplan</li><li>Info an alle Abteilungen</li></ul></div>
     </div>
   </div>
 </div>
 
-<!-- 8 -->
+<!-- 9 -->
 <div class="phase">
-  <div class="phase-head"><span class="num">PHASE 8</span><h2>Regelbetrieb</h2><span class="owner">Owner: <b>PM</b></span></div>
+  <div class="phase-head"><span class="num">PHASE 9</span><h2>Regelbetrieb</h2><span class="owner">Owner: <b>PM</b></span></div>
   <div class="phase-body">
     <div class="notes">
       <div class="note"><div class="t">Review nach 3 und 12 Monaten <span class="tag new">neu</span></div><ul><li>Absatz und Marge gegen Business Case</li><li>Tickets, Rückläufer</li></ul></div>
@@ -468,7 +513,6 @@ flowchart TD
     </div>
   </div>
 </div>
-
 </div>
 
 <section class="block">
@@ -482,10 +526,11 @@ flowchart TD
       <tr><td>2 Business Case · G2</td><td class="A">A</td><td class="R">R</td><td class="C">C</td><td class="C">C</td><td class="C">C</td><td></td><td></td><td></td><td class="C">C</td><td class="C">C</td></tr>
       <tr><td>3 Beschaffung &amp; Stammdaten</td><td class="I">I</td><td class="A">A</td><td class="R">R</td><td></td><td></td><td></td><td class="C">C</td><td></td><td class="C">C</td><td class="C">C</td></tr>
       <tr><td>4 Prüfung &amp; Integration</td><td></td><td class="A">A</td><td class="C">C</td><td></td><td class="R">R</td><td class="C">C</td><td class="R">R</td><td></td><td></td><td class="R">R</td></tr>
-      <tr><td>5 Produkttest</td><td class="I">I</td><td class="A">A</td><td></td><td class="R">R</td><td class="C">C</td><td class="I">I</td><td class="C">C</td><td></td><td></td><td></td></tr>
-      <tr><td>6 Pilot · G5</td><td class="A">A</td><td class="R">R</td><td></td><td class="R">R</td><td class="R">R</td><td class="R">R</td><td class="C">C</td><td class="C">C</td><td class="C">C</td><td></td></tr>
-      <tr><td>7 Markteinführung</td><td class="I">I</td><td class="A">A</td><td class="C">C</td><td class="R">R</td><td class="C">C</td><td class="C">C</td><td class="R">R</td><td class="R">R</td><td></td><td class="C">C</td></tr>
-      <tr><td>8 Regelbetrieb</td><td class="I">I</td><td class="A">A/R</td><td class="C">C</td><td class="C">C</td><td class="C">C</td><td class="C">C</td><td></td><td></td><td class="C">C</td><td></td></tr>
+      <tr><td>5 Prototyp</td><td></td><td class="A">A/R</td><td></td><td></td><td class="R">R</td><td></td><td class="C">C</td><td></td><td></td><td></td></tr>
+      <tr><td>6 Produkttest</td><td class="I">I</td><td class="A">A</td><td></td><td class="R">R</td><td class="C">C</td><td class="R">R</td><td class="C">C</td><td></td><td class="I">I</td><td></td></tr>
+      <tr><td>7 Pilotierung · G6</td><td class="A">A</td><td class="R">R</td><td></td><td class="R">R</td><td class="R">R</td><td class="R">R</td><td class="C">C</td><td class="C">C</td><td class="C">C</td><td class="C">C</td></tr>
+      <tr><td>8 MP · Markteinführung</td><td class="I">I</td><td class="A">A</td><td class="C">C</td><td class="R">R</td><td class="C">C</td><td class="C">C</td><td class="R">R</td><td class="R">R</td><td></td><td class="C">C</td></tr>
+      <tr><td>9 Regelbetrieb</td><td class="I">I</td><td class="A">A/R</td><td class="C">C</td><td class="C">C</td><td class="C">C</td><td class="C">C</td><td></td><td></td><td class="C">C</td><td></td></tr>
     </tbody>
   </table></div>
 </section>
@@ -495,8 +540,8 @@ flowchart TD
   <div class="qs">
     <div class="note"><div class="t">Bestellung vor oder nach G2?</div><p>Auf dem Board folgt die Bestellung direkt auf den GL-Antrag. Gilt das auch für kleine Testmengen, oder darf PM bis zu einem Betrag selbst bestellen?</p></div>
     <div class="note"><div class="t">Wann in Infor und KGV anlegen?</div><p>Schon für den Test (Status „Test“) oder erst zum Pilot? Ohne Artikel keine Testrechnung.</p></div>
-    <div class="note"><div class="t">Produkttest und Pilot: Unterschied?</div><p>Vorschlag: Test prüft das Produkt, Pilot prüft unsere Prozesse. Anzahl Kunden und Dauer pro Stufe festlegen.</p></div>
-    <div class="note"><div class="t">Wer entscheidet an G1, G3, G4?</div><p>Nur PM, oder ein kleines Produktgremium aus PM, Vertrieb und Technik?</p></div>
+    <div class="note"><div class="t">Was genau bedeutet MP?</div><p>Markteinführung, Marktprodukt oder Massenproduktion? Und gibt es eine Obergrenze oder Dauer für jede Stufe?</p></div>
+    <div class="note"><div class="t">Wer entscheidet an G1, G3, G4, G5?</div><p>Nur PM, oder ein kleines Produktgremium aus PM, Vertrieb und Technik?</p></div>
     <div class="note"><div class="t">Schnellspur für kleine Produkte</div><p>Zubehör oder ein neues Modell eines bekannten Herstellers braucht nicht alle Phasen. Kriterien für eine verkürzte Variante festlegen.</p></div>
     <div class="note"><div class="t">Wo liegt der Status?</div><p>Ein Confluence-Board oder eine Liste mit allen Produkten im Prozess, Phase und nächstem Gate.</p></div>
   </div>
