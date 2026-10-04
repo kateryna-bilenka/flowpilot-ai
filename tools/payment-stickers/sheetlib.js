@@ -20,9 +20,10 @@ L.mcm=()=>pair("mc","maestro"); L.visav=()=>pair("visa","vpay");
 
 const LAYOUTS={
  A:{name:"Варіант A — широкий аркуш",cols:7,pieces:[
-  {id:1,c:0,r:0,w:2,h:1,hdr:1,items:["picto","giro"]},
-  {id:2,c:2,r:0,w:3,h:1,hdr:1,items:["nfc","giro","apple"]},
-  {id:3,c:5,r:0,w:2,h:1,hdr:1,items:["mcm","visav"]},
+  {id:1,c:0,r:0,w:1,h:1,hdr:1,items:["giro"]},
+  {id:2,c:1,r:0,w:3,h:1,hdr:1,items:["nfc","giro","apple"]},
+  {id:3,c:4,r:0,w:2,h:1,hdr:1,items:["mcm","visav"]},
+  {id:1,c:6,r:0,w:1,h:1,hdr:1,items:["giro"]},
   {id:4,c:0,r:1,w:6,h:1,items:["nfc","giro","mcm","visav","apple","google"]},
   {id:12,c:6,r:1,w:1,h:1,items:["amex"]},
   {id:5,c:0,r:2,w:3,h:2,items:["nfc","giro","apple","mcm","visav","google"]},
@@ -32,15 +33,15 @@ const LAYOUTS={
   {id:6,c:0,r:4,w:5,h:1,items:["nfc","mcm","visav","apple","google"]},
   {id:15,c:5,r:4,w:1,h:1,items:["unionpay"]},{id:16,c:6,r:4,w:1,h:1,items:["sepa"]},
  ]},
- B:{name:"Варіант B — довга горизонтальна смуга",cols:13,pieces:[
-  {id:1,c:0,r:0,w:2,h:1,hdr:1,items:["picto","giro"]},
-  {id:5,c:0,r:1,w:1,h:1,items:["google"]},{id:6,c:1,r:1,w:1,h:1,items:["mcm"]},
-  {id:2,c:2,r:0,w:3,h:2,hdr:1,items:["nfc","giro","apple","mcm","visav","google"]},
-  {id:3,c:5,r:0,w:3,h:1,hdr:1,items:["nfc","giro","apple"]},
-  {id:7,c:5,r:1,w:1,h:1,items:["visav"]},{id:8,c:6,r:1,w:1,h:1,items:["nfc"]},{id:9,c:7,r:1,w:1,h:1,items:["amex"]},
-  {id:4,c:8,r:0,w:5,h:1,hdr:1,items:["nfc","mcm","visav","apple","google"]},
-  {id:10,c:8,r:1,w:1,h:1,items:["diners"]},{id:11,c:9,r:1,w:1,h:1,items:["jcb"]},{id:12,c:10,r:1,w:1,h:1,items:["unionpay"]},
-  {id:13,c:11,r:1,w:1,h:1,items:["sepa"]},{id:14,c:12,r:1,w:1,h:1,items:["picto"]},
+ B:{name:"Варіант B — довга горизонтальна смуга",cols:12,pieces:[
+  {id:1,c:0,r:0,w:1,h:1,hdr:1,items:["giro"]},
+  {id:5,c:0,r:1,w:1,h:1,items:["google"]},
+  {id:2,c:1,r:0,w:3,h:2,hdr:1,items:["nfc","giro","apple","mcm","visav","google"]},
+  {id:3,c:4,r:0,w:3,h:1,hdr:1,items:["nfc","giro","apple"]},
+  {id:6,c:4,r:1,w:1,h:1,items:["mcm"]},{id:7,c:5,r:1,w:1,h:1,items:["visav"]},{id:8,c:6,r:1,w:1,h:1,items:["nfc"]},
+  {id:4,c:7,r:0,w:5,h:1,hdr:1,items:["nfc","mcm","visav","apple","google"]},
+  {id:9,c:7,r:1,w:1,h:1,items:["amex"]},{id:10,c:8,r:1,w:1,h:1,items:["diners"]},{id:11,c:9,r:1,w:1,h:1,items:["jcb"]},
+  {id:12,c:10,r:1,w:1,h:1,items:["unionpay"]},{id:13,c:11,r:1,w:1,h:1,items:["sepa"]},
  ]}
 };
 // T tile, G gap, M margin, HH header height (all mm)
