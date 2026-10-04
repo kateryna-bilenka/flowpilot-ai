@@ -1,24 +1,30 @@
 # Універсальний аркуш наклейок «чим можна платити»
 
 Один аркуш друкується для всіх клієнтів. Клієнт відклеює лише блок, що відповідає його касі.
-Між наклейками 3 мм. Рідші картки й піктограми — окремими квадратиками. Логотипи схематичні: для друку замінити офіційними файлами брендів.
+Обов'язкова базова наклейка 1: шапка REA CARD + «оплата карткою» + girocard.
+Логотипи схематичні: для друку замінити офіційними файлами брендів.
 
-- `naklejky-A.pdf` / `sheet-A.svg` — A4 горизонтально (297 × 210 мм), 17 наклейок, плитка 37 мм
-- `naklejky-B.pdf` / `sheet-B.svg` — вузька смуга (100 × 573 мм), 13 наклейок, плитка 44 мм
-- `build.js` — генерує SVG (`node build.js`)
+Розмір аркуша залежить від розміру плитки:
 
-| Каса приймає | A4 | Смуга |
+    node build.js <плитка мм> <проміжок> <поле> <шапка REA>
+    node build.js 40 3 5 16   # A: 308 × 238 мм (A3), B: 93 × 614 мм
+
+- `sheetlib.js`: логотипи та розкладки (A — 7 колонок, B — смуга з 2 колонок)
+- `naklejky-A.pdf` / `sheet-A.svg`: широкий аркуш, 16 наклейок (плитка 40 мм)
+- `naklejky-B.pdf` / `sheet-B.svg`: вузька смуга, 14 наклейок (плитка 40 мм)
+
+| Каса приймає | A | B |
 |---|---|---|
-| girocard + Mastercard + Visa | 1 (смуга) або 2 (кубик) | 1 |
-| тільки girocard (+ Apple Pay) | 3 | 2 |
-| Mastercard + Visa без girocard | 7 | 3 |
-| Mastercard + Visa без Apple/Google Pay | 8 | 5 + 6 |
-| girocard + лише Mastercard / лише Visa | 3 + 4 (або 5) + 6 | 2 + 5 (або 6) + 4 |
-| American Express | + 12 | + 8 |
-| Diners Club | + 13 | + 9 |
-| JCB | + 14 | + 10 |
-| UnionPay | + 15 | + 11 |
-| SEPA Lastschrift | + 16 | + 12 |
-| піктограми «оплата карткою» | + 17 | + 13 |
+| базова: оплата карткою + girocard (REA) | 1 | 1 |
+| girocard + Mastercard + Visa | 4 (смуга) або 5 (кубик) | 2 |
+| тільки girocard + безконтактно (+ Apple Pay) | 2 | 3 |
+| Mastercard + Visa без girocard | 6 | 4 |
+| Mastercard + Visa без Apple/Google Pay | 3 | 6 + 7 |
+| girocard + лише Mastercard / лише Visa | 2 + 7 (або 8) + 9 | 3 + 6 (або 7) + 5 |
+| American Express | + 12 | + 9 |
+| Diners Club | + 13 | + 10 |
+| JCB | + 14 | + 11 |
+| UnionPay | + 15 | + 12 |
+| SEPA Lastschrift | + 16 | + 13 |
 
-Google Pay не працює з girocard, тому в блоці «тільки girocard» є лише Apple Pay.
+Google Pay не працює з girocard, тому в блоці girocard є лише Apple Pay.
