@@ -28,3 +28,7 @@
 | SEPA Lastschrift | + 16 | + 13 |
 
 Google Pay не працює з girocard, тому в блоці girocard є лише Apple Pay.
+
+## Word-версія
+
+`naklejky.docx`: кожна наклейка як таблиця з жирною рамкою, логотипи в клітинках, щоб редагувати в Word. Генерується: `node logos.js && node mkdocx.js` (картинки в `png/`).
