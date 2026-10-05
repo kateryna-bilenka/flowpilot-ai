@@ -68,7 +68,7 @@ function sheet(lay,opt){
   for(const p of lay.pieces){
     const x=M+p.c*(T+G), y=rowY[p.r], w=p.w*T+(p.w-1)*G;
     const h=rowY[p.r+p.h-1]+rowH[p.r+p.h-1]-y;
-    s+=`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="2.5" fill="#fff" stroke="#9aa3ad" stroke-width="0.35" ${opt.crop?'stroke-dasharray="1.2 0.8"':""}/>`;
+    s+=`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="2.5" fill="#fff"/>`;
     let ty=y;
     if(p.hdr){
       s+=`<path d="M${x+2} ${y+2}h${w-4}v${HH-2}h${-(w-4)}z" fill="#7ba23a"/>`;
@@ -80,9 +80,10 @@ function sheet(lay,opt){
     const cw=w/p.w, ch=(y+h-ty)/p.h;
     p.items.forEach((it,k)=>{
       const cx=x+(k%p.w)*cw, cy=ty+Math.floor(k/p.w)*ch, sz=Math.min(cw,ch)-10;
-      s+=`<rect x="${cx+2.5}" y="${cy+2.5}" width="${cw-5}" height="${ch-5}" rx="1.5" fill="none" stroke="#8fa6c4" stroke-width="0.3"/>`;
+      s+=`<rect x="${cx+2.5}" y="${cy+2.5}" width="${cw-5}" height="${ch-5}" rx="1.5" fill="none" stroke="#555d66" stroke-width="0.35"/>`;
       s+=`<svg x="${cx+(cw-sz)/2}" y="${cy+(ch-sz)/2}" width="${sz}" height="${sz}" viewBox="0 0 100 100">${L[it]()}</svg>`;
     });
+    s+=`<rect x="${x+0.5}" y="${y+0.5}" width="${w-1}" height="${h-1}" rx="2.2" fill="none" stroke="#000" stroke-width="1"/>`;
     if(opt.ids){const r=Math.max(3.5,T*0.1);s+=`<circle cx="${x+w-1}" cy="${y+1}" r="${r}" fill="#1f2a24" stroke="#fff" stroke-width="0.7"/><text x="${x+w-1}" y="${y+1+r*0.38}" font-size="${r*1.05}" fill="#fff" font-weight="700" text-anchor="middle" font-family="Onest,Arial,sans-serif">${p.id}</text>`}
   }
   return s+`</svg>`;

@@ -2,7 +2,7 @@
 const fs=require('fs');const {LAYOUTS}=require('./sheetlib.js');
 const {Document,Packer,Paragraph,TextRun,Table,TableRow,TableCell,ImageRun,WidthType,BorderStyle,ShadingType,AlignmentType,VerticalAlign,HeightRule,PageOrientation,HeadingLevel,TableLayoutType}=require('docx');
 const MM=56.7,T=Math.round(40*MM),HH=Math.round(16*MM),IMG=Math.round(30/25.4*96),FONT="Arial";
-const THICK={style:BorderStyle.SINGLE,size:48,color:"000000"},THIN={style:BorderStyle.DOTTED,size:4,color:"C8CDD2"},NONE={style:BorderStyle.NONE,size:0,color:"FFFFFF"};
+const THICK={style:BorderStyle.SINGLE,size:48,color:"000000"},THIN={style:BorderStyle.SINGLE,size:8,color:"555D66"},NONE={style:BorderStyle.NONE,size:0,color:"FFFFFF"};
 const img=id=>new ImageRun({type:"png",data:fs.readFileSync(`png/${id}.png`),transformation:{width:IMG,height:IMG},altText:{title:id,description:id,name:id}});
 function grid(lay){
   const rows=Math.max(...lay.pieces.map(p=>p.r+p.h)),at=(r,c)=>lay.pieces.find(p=>r>=p.r&&r<p.r+p.h&&c>=p.c&&c<p.c+p.w);
@@ -21,7 +21,7 @@ function grid(lay){
           c+=p.w;
         }else{
           // piece without header (or empty): blank strip that belongs to the piece below
-          cells.push(new TableCell({width:{size:T,type:WidthType.DXA},borders:p?{top:p.r===r?THICK:NONE,bottom:NONE,...edge(p,r,c)}:{top:NONE,bottom:NONE,left:NONE,right:NONE},children:[new Paragraph({keepNext:true,children:[]})]}));
+          cells.push(new TableCell({width:{size:T,type:WidthType.DXA},borders:p?{top:p.r===r?THICK:NONE,bottom:NONE,left:c===p.c?THICK:NONE,right:c===p.c+p.w-1?THICK:NONE}:{top:NONE,bottom:NONE,left:NONE,right:NONE},children:[new Paragraph({keepNext:true,children:[]})]}));
           c++;
         }
       }
@@ -42,7 +42,7 @@ function grid(lay){
 }
 const P=(text,o={})=>new Paragraph({spacing:{before:o.before??0,after:o.after??100},children:[new TextRun({text,font:FONT,size:o.size??20,bold:o.bold,color:o.color})]});
 const H=t=>new Paragraph({heading:HeadingLevel.HEADING_1,spacing:{after:80},children:[new TextRun({text:t,font:FONT,size:32,bold:true,color:"1F2A24"})]});
-const NOTE="Кожна клітинка — один логотип 40 × 40 мм. Жирна чорна рамка — одна наклейка (вирізається разом); пунктир — межа між логотипами всередині наклейки. Щоб перегрупувати: змініть, де жирні лінії (Конструктор таблиць → Межі). Сірий номер у куточку відповідає таблиці «яка каса — що клеїти». Логотипи схематичні: правою кнопкою → Змінити рисунок.";
+const NOTE="Кожна клітинка — один логотип 40 × 40 мм. Жирна чорна рамка — одна наклейка (вирізається разом); тонка сіра лінія — межа між логотипами всередині наклейки. Щоб перегрупувати: змініть, де жирні лінії (Конструктор таблиць → Межі). Сірий номер у куточку відповідає таблиці «яка каса — що клеїти». Логотипи схематичні: правою кнопкою → Змінити рисунок.";
 const M=454; // 8 mm margins
 const sec=(w,h,children)=>({properties:{page:{size:{width:Math.round(h*MM),height:Math.round(w*MM),orientation:PageOrientation.LANDSCAPE},margin:{top:M,bottom:M,left:M,right:M}}},children});
 const LK=[["Що приймає каса","Аркуш A","Смуга B"],
