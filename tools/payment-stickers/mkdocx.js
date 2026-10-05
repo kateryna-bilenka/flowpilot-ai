@@ -6,18 +6,33 @@ const THICK={style:BorderStyle.SINGLE,size:48,color:"000000"},THIN={style:Border
 const img=id=>new ImageRun({type:"png",data:fs.readFileSync(`png/${id}.png`),transformation:{width:IMG,height:IMG},altText:{title:id,description:id,name:id}});
 function grid(lay){
   const rows=Math.max(...lay.pieces.map(p=>p.r+p.h)),at=(r,c)=>lay.pieces.find(p=>r>=p.r&&r<p.r+p.h&&c>=p.c&&c<p.c+p.w);
+  const hdrRow=r=>lay.pieces.some(p=>p.hdr&&p.r===r);
+  const edge=(p,r,c)=>({left:c===p.c?THICK:THIN,right:c===p.c+p.w-1?THICK:THIN});
   const out=[];
-  const hdrs=lay.pieces.filter(p=>p.hdr&&p.r===0).sort((a,b)=>a.c-b.c);
-  if(hdrs.length) out.push(new TableRow({cantSplit:true,height:{value:HH,rule:HeightRule.EXACT},children:hdrs.map(p=>new TableCell({columnSpan:p.w,width:{size:T*p.w,type:WidthType.DXA},
-    shading:{type:ShadingType.CLEAR,fill:"7BA23A",color:"auto"},verticalAlign:VerticalAlign.CENTER,margins:{left:120,right:120},
-    borders:{top:THICK,left:THICK,right:THICK,bottom:THIN},
-    children:[new Paragraph({keepNext:true,children:[new TextRun({text:"REA CARD",bold:true,color:"FFFFFF",size:p.w>1?30:22,font:FONT}),...(p.w>1?[new TextRun({text:"   www.rea-card.de",color:"FFFFFF",size:14,font:FONT})]:[])]})]}))}));
   for(let r=0;r<rows;r++){
+    if(hdrRow(r)){
+      const cells=[];
+      for(let c=0;c<lay.cols;){
+        const p=at(r,c);
+        if(p&&p.hdr&&p.r===r){
+          cells.push(new TableCell({columnSpan:p.w,width:{size:T*p.w,type:WidthType.DXA},shading:{type:ShadingType.CLEAR,fill:"7BA23A",color:"auto"},verticalAlign:VerticalAlign.CENTER,margins:{left:120,right:120},
+            borders:{top:THICK,left:THICK,right:THICK,bottom:THIN},
+            children:[new Paragraph({keepNext:true,children:[new TextRun({text:"REA CARD",bold:true,color:"FFFFFF",size:p.w>1?30:22,font:FONT}),...(p.w>1?[new TextRun({text:"   www.rea-card.de",color:"FFFFFF",size:14,font:FONT})]:[])]})]}));
+          c+=p.w;
+        }else{
+          // piece without header (or empty): blank strip that belongs to the piece below
+          cells.push(new TableCell({width:{size:T,type:WidthType.DXA},borders:p?{top:p.r===r?THICK:NONE,bottom:NONE,...edge(p,r,c)}:{top:NONE,bottom:NONE,left:NONE,right:NONE},children:[new Paragraph({keepNext:true,children:[]})]}));
+          c++;
+        }
+      }
+      out.push(new TableRow({cantSplit:true,height:{value:HH,rule:HeightRule.EXACT},children:cells}));
+    }
     const cells=[];
     for(let c=0;c<lay.cols;c++){
       const p=at(r,c),id=p&&p.items[(r-p.r)*p.w+(c-p.c)],first=p&&r===p.r&&c===p.c;
+      const top=!p?THIN:(r===p.r?(hdrRow(r)?(p.hdr?THIN:NONE):THICK):THIN);
       cells.push(new TableCell({width:{size:T,type:WidthType.DXA},verticalAlign:VerticalAlign.CENTER,margins:{top:0,bottom:0,left:40,right:40},
-        borders:p?{top:r===p.r&&!p.hdr?THICK:THIN,bottom:r===p.r+p.h-1?THICK:THIN,left:c===p.c?THICK:THIN,right:c===p.c+p.w-1?THICK:THIN}:{top:THIN,bottom:THIN,left:THIN,right:THIN},
+        borders:p?{top,bottom:r===p.r+p.h-1?THICK:THIN,...edge(p,r,c)}:{top:THIN,bottom:THIN,left:THIN,right:THIN},
         children:[...(first?[new Paragraph({keepNext:true,spacing:{after:0},children:[new TextRun({text:String(p.id),size:14,bold:true,color:"8A949C",font:FONT})]})]:[]),
           new Paragraph({keepNext:r<rows-1,alignment:AlignmentType.CENTER,children:id?[img(id)]:[]})]}));
     }
@@ -38,7 +53,13 @@ const W=[7000,4200,4200];
 const lookup=new Table({width:{size:W[0]+W[1]+W[2],type:WidthType.DXA},columnWidths:W,rows:LK.map((r,i)=>new TableRow({children:r.map((t,j)=>new TableCell({width:{size:W[j],type:WidthType.DXA},
   shading:i===0?{type:ShadingType.CLEAR,fill:"E6EEDB",color:"auto"}:undefined,margins:{top:60,bottom:60,left:120,right:120},borders:{top:THIN,bottom:THIN,left:THIN,right:THIN},
   children:[new Paragraph({children:[new TextRun({text:t,font:FONT,size:20,bold:i===0||j>0})]})]}))}))});
+const LKC=[["Що приймає каса","Варіант C"],["Тільки girocard + безконтактно (Apple Pay працює)","1"],["Mastercard + Visa без Apple Pay / Google Pay","2"],["girocard + Mastercard + Visa (усе)","3"],["Mastercard + Visa + Apple Pay / Google Pay, без girocard","4"],["Diners Club","+ 5"],["American Express","+ 6"],["JCB","+ 7"],["UnionPay","+ 8"],["SEPA Lastschrift","+ 9"],["Оплата карткою (Kartenzahlung)","+ 10"]];
+const WC=[9000,4200];
+const lookupC=new Table({width:{size:WC[0]+WC[1],type:WidthType.DXA},columnWidths:WC,rows:LKC.map((r,i)=>new TableRow({children:r.map((t,j)=>new TableCell({width:{size:WC[j],type:WidthType.DXA},
+  shading:i===0?{type:ShadingType.CLEAR,fill:"E6EEDB",color:"auto"}:undefined,margins:{top:50,bottom:50,left:120,right:120},borders:{top:THIN,bottom:THIN,left:THIN,right:THIN},
+  children:[new Paragraph({children:[new TextRun({text:t,font:FONT,size:20,bold:i===0||j>0})]})]}))}))});
 const doc=new Document({styles:{default:{document:{run:{font:FONT}}}},sections:[
+ sec(420,297,[H("Аркуш C — за ескізом (6 колонок)"),P(NOTE,{color:"5F6A63",size:18}),grid(LAYOUTS.C),P("",{after:200}),lookupC]),
  sec(420,297,[H("Аркуш A — широкий"),P(NOTE,{color:"5F6A63",size:18}),grid(LAYOUTS.A)]),
  sec(500,140,[P("Смуга B — довга, усе горизонтально",{bold:true,size:24,after:60}),grid(LAYOUTS.B)]),
  sec(297,210,[H("Яка каса — що клеїти"),lookup,P("Google Pay не працює з girocard, тому в блоці girocard є тільки Apple Pay.",{before:160,color:"5F6A63"})]),

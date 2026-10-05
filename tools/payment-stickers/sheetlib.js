@@ -14,12 +14,21 @@ const L={
  sepa:()=>`${t(56,26,15,"SEPA","#10298e",800)}${t(56,38,9,"Lastschrift","#10298e",600)}<rect x="20" y="46" width="60" height="38" fill="none" stroke="#10298e" stroke-width="2"/><rect x="50" y="52" width="24" height="15" rx="2" fill="none" stroke="#888" stroke-width="2" transform="rotate(-30 62 60)"/><path d="M30 78l26-26 4 4-26 26z" fill="#10298e"/><path d="M26 76c6-4 10 2 16-2" fill="none" stroke="#10298e" stroke-width="2"/>`,
  picto:()=>`<g fill="none" stroke="#8a9a2c" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"><rect x="14" y="16" width="28" height="18"/><rect x="20" y="34" width="16" height="12"/><path d="M24 22h3M31 22h3M24 28h3M31 28h3"/><path d="M58 18h26l-6 18H64z"/><circle cx="66" cy="42" r="2.5"/><circle cx="78" cy="42" r="2.5"/><path d="M16 58h18l6 6v22H16z"/><path d="M22 66h6v6h-6z"/><rect x="58" y="56" width="26" height="30" rx="3"/><path d="M63 62h16v6H63zM63 73h3M70 73h3M77 73h2M63 79h3M70 79h3M77 79h2"/></g>`,
  card:()=>`<rect x="14" y="20" width="72" height="46" rx="6" fill="#fff" stroke="#1f2a24" stroke-width="3"/><rect x="14" y="30" width="72" height="8" fill="#1f2a24"/><rect x="22" y="45" width="14" height="10" rx="2" fill="#d9a400"/><path d="M44 52h30M44 58h18" stroke="#1f2a24" stroke-width="2.5" stroke-linecap="round"/>${t(50,84,11.5,"Kartenzahlung","#1f2a24",700)}`,
+ rea:()=>`<rect x="10" y="26" width="80" height="48" rx="5" fill="#7ba23a"/>${t(50,50,19,"REA","#fff",800)}${t(50,66,13,"CARD","#fff",700)}`,
  amex:()=>`<rect x="18" y="18" width="64" height="64" fill="#2e77bb"/>${t(50,47,11.5,"AMERICAN","#fff",800)}${t(50,61,11.5,"EXPRESS","#fff",800)}`,
 };
 const pair=(a,b)=>`<svg x="10" y="0" width="80" height="50" viewBox="0 0 100 100">${L[a]()}</svg><line x1="20" y1="50" x2="80" y2="50" stroke="#c9d3dd" stroke-width="1"/><svg x="10" y="50" width="80" height="50" viewBox="0 0 100 100">${L[b]()}</svg>`;
 L.mcm=()=>pair("mc","maestro"); L.visav=()=>pair("visa","vpay");
 
 const LAYOUTS={
+ C:{name:"Варіант C — ескіз 6 колонок",cols:6,pieces:[
+  {id:1,c:0,r:0,w:3,h:1,hdr:1,items:["nfc","giro","apple"]},
+  {id:2,c:3,r:0,w:3,h:1,hdr:1,items:["nfc","mcm","visav"]},
+  {id:3,c:0,r:1,w:3,h:2,hdr:1,items:["nfc","giro","apple","mcm","visav","google"]},
+  {id:4,c:3,r:1,w:3,h:2,items:["rea","mcm","apple","nfc","visav","google"]},
+  {id:5,c:0,r:3,w:1,h:1,items:["diners"]},{id:6,c:1,r:3,w:1,h:1,items:["amex"]},{id:7,c:2,r:3,w:1,h:1,items:["jcb"]},
+  {id:8,c:3,r:3,w:1,h:1,items:["unionpay"]},{id:9,c:4,r:3,w:1,h:1,items:["sepa"]},{id:10,c:5,r:3,w:1,h:1,items:["card"]},
+ ]},
  A:{name:"Варіант A — широкий аркуш",cols:7,pieces:[
   {id:1,c:0,r:0,w:2,h:1,hdr:1,items:["giro","card"]},
   {id:2,c:2,r:0,w:3,h:1,hdr:1,items:["nfc","giro","apple"]},

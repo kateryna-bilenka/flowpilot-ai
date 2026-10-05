@@ -10,6 +10,7 @@
     node build.js 40 3 5 16   # A: 308 × 238 мм (A3), B: 566 × 109 мм
 
 - `sheetlib.js`: логотипи та розкладки (A — 7 колонок, B — горизонтальна смуга з 2 рядів)
+- `naklejky-C.pdf` / `sheet-C.svg`: варіант за ескізом, 6 колонок, 10 наклейок, 265 × 211 мм (плитка 40 мм). C1 girocard+NFC+Apple Pay, C2 NFC+Mastercard+Visa, C3 усе (REA), C4 без girocard з плиткою REA, C5–C10 Diners, Amex, JCB, UnionPay, SEPA, оплата карткою
 - `naklejky-A.pdf` / `sheet-A.svg`: широкий аркуш, 16 наклейок (плитка 40 мм)
 - `naklejky-B.pdf` / `sheet-B.svg`: довга горизонтальна смуга, 14 наклейок (плитка 40 мм), усі блоки читаються горизонтально
 
